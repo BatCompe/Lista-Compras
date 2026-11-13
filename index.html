@@ -1,53 +1,67 @@
-<!doctype html>
-<html lang="pt-PT">
+<!DOCTYPE html>
+<!--
+  © 2026 Cassiano Tenda — Todos os direitos reservados.
+  Lista de Compras — Made by Cassiano Tenda
+-->
+<html lang="pt">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Lista de Compras</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1f7a4d">
+<title>Lista de Compras</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Compras">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
+/* Layout: uma coluna estreita para o telemóvel — cabeçalho fixo com o total, corredores (categorias) por ordem do supermercado */
 :root{
   --bg:#f5f6f1; --card:#ffffff; --fg:#1d241f; --muted:#69736b; --line:#e2e6dc;
   --accent:#1f7a4d; --accent-ink:#ffffff; --accent-soft:#e3f1e8; --price:#b4441f; --warn:#b4441f; --warn-soft:#fbe9e2;
-  --display:"Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-  --body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --r:14px; color-scheme:light;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --r:14px;
 }
-@media (prefers-color-scheme: dark){:root{
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121613; --card:#1b211d; --fg:#e8ede6; --muted:#9aa59c; --line:#2b332d;
   --accent:#4cc28a; --accent-ink:#0d1a12; --accent-soft:#1c3427; --price:#f0926b; --warn:#f0926b; --warn-soft:#3a231b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121613; --card:#1b211d; --fg:#e8ede6; --muted:#9aa59c; --line:#2b332d;
+  --accent:#4cc28a; --accent-ink:#0d1a12; --accent-soft:#1c3427; --price:#f0926b; --warn:#f0926b; --warn-soft:#3a231b; color-scheme:dark}
 
 *{box-sizing:border-box}
-html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font:16px/1.4 var(--body);-webkit-tap-highlight-color:transparent}
-[hidden]{display:none!important}
-.wrap{max-width:640px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-bottom:120px}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 120px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
-.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(14px + env(safe-area-inset-top, 0px)) 0 10px;display:grid;gap:10px}
-h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
+/* cabeçalho */
+.top{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:grid;gap:10px}
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
 .sum{display:flex;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
 .pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;color:var(--muted);white-space:nowrap}
 .pill b{color:var(--fg);font-weight:700}
 .pill.total b{color:var(--price)}
-.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
-.tabs a{text-align:center;padding:9px 0;border-radius:9px;font-weight:600;color:var(--muted);text-decoration:none;font-size:15px}
+.share{display:flex;gap:8px}
+.ibtn{border:1px solid var(--line);background:var(--card);border-radius:12px;height:42px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;text-decoration:none;color:var(--fg)}
+.ibtn svg{width:18px;height:18px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs a{text-align:center;padding:9px 0;border-radius:9px;font-weight:600;color:var(--muted);text-decoration:none;font-size:14px}
 .tabs a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
 
+/* acrescentar */
 .add{display:grid;grid-template-columns:1fr auto;gap:8px;position:relative;margin-top:4px}
 .add input,.add select,.field input,.field select{height:48px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:0 14px;width:100%;min-width:0}
 .add .cat{grid-column:1/-1}
-.btn{height:48px;border:0;border-radius:12px;padding:0 18px;background:var(--accent);color:var(--accent-ink);font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
-.btn svg{width:20px;height:20px}
+.btn{height:48px;border:0;border-radius:12px;padding:0 18px;background:var(--accent);color:var(--accent-ink);font-weight:700}
 .btn.ghost{background:var(--card);color:var(--fg);border:1px solid var(--line)}
 .btn.warn{background:var(--warn-soft);color:var(--warn)}
 .sugs{position:absolute;left:0;right:0;top:52px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);z-index:6;overflow:hidden}
@@ -55,10 +69,20 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
 .sugs button+button{border-top:1px solid var(--line)}
 .sugs small{color:var(--muted)}
 
+/* corredores */
 .aisle{margin-top:18px}
 .aisle h2{display:flex;align-items:center;gap:8px;font:700 13px/1 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
 .dot{width:10px;height:10px;border-radius:50%;flex:none}
-.aisle h2 .n{margin-left:auto;font-variant-numeric:tabular-nums;letter-spacing:0}
+.ico{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);display:inline-grid;place-items:center;font-size:17px;line-height:1;flex:none}
+.aisle h2{font-size:13px}
+.aisle h2 .n{margin-left:auto;font-variant-numeric:tabular-nums;letter-spacing:0;white-space:nowrap}
+.aisle h2.tg{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;padding:6px 0;margin:0}
+.aisle h2.tg .sv{width:18px;text-align:center;transition:transform .2s;font-size:12px;flex:none}
+.aisle.fechada h2.tg .sv{transform:rotate(-90deg)}
+.aisle.fechada .items{display:none}
+.aisle:not(.fechada) h2.tg{margin-bottom:8px}
+.tgall{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+.tgall button{font:600 12px var(--body);color:var(--muted);background:none;border:1px solid currentColor;border-radius:999px;padding:6px 12px;cursor:pointer;opacity:.85}
 .items{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .item{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:6px;padding:8px 10px 8px 6px;min-height:60px}
 .item+.item{border-top:1px solid var(--line)}
@@ -76,6 +100,7 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
 .qty output{min-width:30px;text-align:center;font-weight:700}
 .item.done .qty{opacity:.45}
 
+/* habituais */
 .search{height:48px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:0 14px;width:100%;margin-top:4px}
 .hab{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:6px 8px 6px 14px;min-height:56px}
 .hab+.hab{border-top:1px solid var(--line)}
@@ -85,27 +110,43 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
 .edit{width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:none;display:grid;place-items:center;color:var(--muted)}
 .edit svg{width:18px;height:18px}
 
+/* estados */
+.empty{margin-top:28px;background:var(--card);border:1px dashed var(--line);border-radius:var(--r);padding:26px 20px;text-align:center;color:var(--muted)}
+.empty strong{display:block;font:700 20px/1.2 var(--display);color:var(--fg);margin-bottom:6px}
+.note{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px}
+.note[hidden]{display:none}
+.intro{color:var(--muted);font-size:14px;margin:12px 2px 0}
+.pr{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;padding:10px 12px}
+.pr+.pr{border-top:1px solid var(--line)}
+.pr .nm b{display:block;font-weight:600}
+.pr .nm small{color:var(--muted);font-variant-numeric:tabular-nums}
+.pd{height:40px;border-radius:10px;background:#e2231a;color:#fff;font-weight:700;font-size:14px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap}
+.pr form{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:8px}
+.pr input{height:42px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:0 12px;width:100%;min-width:0;font-variant-numeric:tabular-nums}
+.pr .btn{height:42px}
+
 /* partilhar */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px;display:grid;gap:10px}
 .card h2{font:800 19px/1.2 var(--display);margin:0}
 .card p{margin:0;color:var(--muted);font-size:15px}
-.card .btn{width:100%}
+.card .btn{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.card .btn svg{width:20px;height:20px}
 .card details{font-size:14px;color:var(--muted)}
 .card summary{cursor:pointer;font-weight:600;color:var(--fg)}
-.card ol{margin:8px 0 0;padding-left:20px;display:grid;gap:4px}
+.card ol{margin:8px 0 0;padding-left:20px;display:grid;gap:6px}
 .estado{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
 .ok{background:var(--accent-soft);color:var(--fg);border-radius:12px;padding:12px;font-size:15px;display:grid;gap:8px}
+.ok[hidden]{display:none}
 
-.empty{margin-top:28px;background:var(--card);border:1px dashed var(--line);border-radius:var(--r);padding:26px 20px;text-align:center;color:var(--muted)}
-.empty strong{display:block;font:700 20px/1.2 var(--display);color:var(--fg);margin-bottom:6px}
-.note{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:14px}
-
+/* barra de baixo */
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:linear-gradient(to top,var(--bg) 70%,transparent);padding:18px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
 .bar .in{max-width:640px;margin:0 auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .bar .btn{flex:1}
 .bar p{margin:0;flex-basis:100%;font-size:14px;text-align:center}
 
+/* janela de edição */
 .sheet{position:fixed;inset:0;z-index:20;background:rgba(10,14,11,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
 .panel{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:18px max(16px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));display:grid;gap:12px;max-height:92vh;overflow:auto}
 .panel h3{font:800 22px/1.1 var(--display);margin:0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -114,18 +155,28 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row .btn{flex:1}
 .confirm{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:12px;display:grid;gap:8px}
-.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:30;max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:30}
+.toast[hidden]{display:none}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>Lista de Compras</h1>
+    <div class="title-row">
+      <h1>Lista de Compras</h1>
+      <div class="share">
+        <a class="ibtn" id="wa" href="https://wa.me/" target="_blank" rel="noopener" title="Enviar por WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>WhatsApp</a>
+        <button class="ibtn" id="copiar" type="button" title="Copiar a lista como texto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar</button>
+      </div>
+    </div>
     <div class="sum" id="sum"></div>
     <nav class="tabs" aria-label="Vistas">
       <a href="#lista" id="t-lista">Lista</a>
       <a href="#habituais" id="t-hab">Habituais</a>
+      <a href="#precos" id="t-precos">Preços</a>
       <a href="#partilhar" id="t-par">Partilhar</a>
     </nav>
   </header>
@@ -139,25 +190,24 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
       <select class="cat" id="add-cat" aria-label="Categoria"></select>
       <div class="sugs" id="sugs" hidden></div>
     </form>
-    <div id="lista"></div>
+    <div class="tgall" data-tgall="lista"><button type="button" data-acao="abrir-todas" data-v="lista">Abrir todas</button><button type="button" data-acao="fechar-todas" data-v="lista">Fechar todas</button></div><div id="lista"></div>
   </section>
 
-  <section id="v-hab" hidden>
-    <input class="search" id="pesq" placeholder="Procurar nos habituais" aria-label="Procurar">
-    <div id="habs"></div>
+  <section id="v-precos" hidden>
+    <p class="intro">Toca em <b>Pingo Doce</b> para pesquisar o produto no site, escreve o preço e carrega em <b>Guardar</b>. Se guardares o link da página do produto (toca no nome do produto), o botão passa a abrir logo esse produto.</p>
+    <div class="tgall" data-tgall="precos"><button type="button" data-acao="abrir-todas" data-v="precos">Abrir todas</button><button type="button" data-acao="fechar-todas" data-v="precos">Fechar todas</button></div><div id="precos"></div>
   </section>
 
   <section id="v-par" hidden>
     <div class="card">
       <h2>1. Enviar a minha lista</h2>
-      <p>Cria um ficheiro com a tua lista. Escolhe o WhatsApp e a pessoa a quem a queres mandar.</p>
+      <p>Cria um ficheiro com a tua lista (produtos, quantidades, preços e links do Pingo Doce). Escolhe o WhatsApp e a pessoa.</p>
       <button class="btn" type="button" id="enviar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Enviar ficheiro</button>
     </div>
-
     <div class="card">
       <h2>2. Juntar a lista que recebi</h2>
-      <p>Junta à tua lista o ficheiro que a outra pessoa te mandou. Nada se perde: o que foi mudado mais recentemente é o que fica.</p>
+      <p>Junta à tua lista o ficheiro que a outra pessoa te mandou. Quando o mesmo produto foi mudado nos dois telemóveis, fica a alteração mais recente.</p>
       <button class="btn" type="button" id="juntar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 15V3"/><path d="m7 10 5 5 5-5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Escolher ficheiro recebido</button>
       <input type="file" id="ficheiro" accept=".txt,.json,text/plain,application/json" hidden>
@@ -165,25 +215,23 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
       <details>
         <summary>Como chego ao ficheiro do WhatsApp?</summary>
         <ol>
-          <li><b>Android:</b> no WhatsApp, toca no ficheiro, depois em ⋮ › <b>Partilhar</b> e escolhe <b>Lista de Compras</b>. Junta logo. Se não aparecer, carrega aqui em <b>Escolher ficheiro recebido</b> e procura em <b>Transferências</b> ou <b>WhatsApp Documents</b>.</li>
-          <li><b>iPhone:</b> no WhatsApp, toca no ficheiro › botão Partilhar › <b>Guardar em Ficheiros</b>. Depois carrega aqui em <b>Escolher ficheiro recebido</b>.</li>
+          <li><b>Android:</b> no WhatsApp, toca no ficheiro › ⋮ › <b>Partilhar</b> › <b>Lista de Compras</b> (junta logo). Se não aparecer, carrega em <b>Escolher ficheiro recebido</b> e procura em <b>Transferências</b> ou <b>WhatsApp Documents</b>.</li>
+          <li><b>iPhone:</b> no WhatsApp, toca no ficheiro › botão Partilhar › <b>Guardar em Ficheiros</b>. Depois carrega em <b>Escolher ficheiro recebido</b>.</li>
         </ol>
       </details>
     </div>
-
-    <div class="card">
-      <h2>Mandar só o texto</h2>
-      <p>Para quem não tem a app: manda a lista como mensagem normal.</p>
-      <div class="row">
-        <a class="btn ghost" id="wa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
-        <button class="btn ghost" id="copiar" type="button">Copiar</button>
-      </div>
-    </div>
     <p class="estado" id="estado"></p>
+  </section>
+
+  <section id="v-hab" hidden>
+    <input class="search" id="pesq" placeholder="Procurar nos habituais" aria-label="Procurar">
+    <div class="tgall" data-tgall="habs"><button type="button" data-acao="abrir-todas" data-v="habs">Abrir todas</button><button type="button" data-acao="fechar-todas" data-v="habs">Fechar todas</button></div><div id="habs"></div>
   </section>
 </div>
 
-<div class="bar" id="bar" hidden><div class="in" id="bar-in"></div></div>
+<div class="bar" id="bar" hidden>
+  <div class="in" id="bar-in"></div>
+</div>
 
 <div class="sheet" id="sheet" hidden>
   <form class="panel" id="f-edit" autocomplete="off">
@@ -195,6 +243,7 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
       <div class="field"><label for="e-unid">Unidade</label><select id="e-unid"></select></div>
     </div>
     <div class="field"><label for="e-preco">Preço por unidade (€)</label><input id="e-preco" inputmode="decimal" placeholder="ex.: 1,29"></div>
+    <div class="field"><label for="e-link">Link do produto no Pingo Doce (opcional)</label><input id="e-link" inputmode="url" placeholder="Cola aqui o endereço da página do produto"></div>
     <div class="row"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" id="e-fechar">Fechar</button></div>
     <div class="row"><button class="btn ghost" type="button" id="e-tirar">Tirar da lista</button><button class="btn warn" type="button" id="e-apagar">Apagar dos habituais</button></div>
     <div class="confirm" id="e-conf" hidden>Apagar este produto de vez? Deixa de aparecer nos habituais (também no outro telemóvel, depois de juntarem as listas).
@@ -207,42 +256,66 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0}
 
 <script>
 // ── Corredores, pela ordem habitual de um supermercado ────────────────────────
+// Categorias do site do Pingo Doce (pela mesma ordem do menu de produtos)
 const CATS = [
-  ['frutas', 'Frutas e Legumes', '#4c9a2a'],
-  ['padaria', 'Padaria e Pastelaria', '#c98a2e'],
+  ['frutas-e-vegetais', 'Frutas e Vegetais', '#4c9a2a'],
   ['talho', 'Talho', '#b8433a'],
   ['peixaria', 'Peixaria', '#2f7fb5'],
-  ['charcutaria', 'Charcutaria e Queijos', '#d08a6a'],
-  ['laticinios', 'Laticínios e Ovos', '#8fb3d9'],
-  ['mercearia', 'Mercearia', '#a37b45'],
-  ['enlatados', 'Enlatados e Conservas', '#7d8b99'],
-  ['pequeno', 'Pequeno-almoço e Doces', '#d9a441'],
+  ['padaria-e-pastelaria', 'Padaria e Pastelaria', '#c98a2e'],
+  ['charcutaria-e-queijos', 'Charcutaria e Queijos', '#d08a6a'],
+  ['ovos', 'Ovos', '#e0b04a'],
+  ['manteiga-margarina-e-natas', 'Manteiga, Margarina e Natas', '#e8c35a'],
+  ['iogurtes-e-sobremesas', 'Iogurtes e Sobremesas', '#c77bb0'],
+  ['leite-e-bebidas-vegetais', 'Leite e Bebidas Vegetais', '#8fb3d9'],
+  ['take-away', 'Take Away', '#e07b39'],
   ['congelados', 'Congelados', '#5bb6c9'],
-  ['bebidas', 'Bebidas', '#8d5aa8'],
-  ['higiene', 'Higiene Pessoal', '#d46a9a'],
-  ['limpeza', 'Limpeza da Casa', '#3aa59a'],
-  ['casa', 'Casa e Papel', '#9a9a6a'],
+  ['cafe-cha-e-achocolatados', 'Café, Chá e Achocolatados', '#7a5136'],
+  ['bolachas-cereais-e-guloseimas', 'Bolachas, Cereais e Guloseimas', '#d9a441'],
+  ['mercearia', 'Mercearia', '#a37b45'],
+  ['aguas-sumos-e-refrigerantes', 'Águas, Sumos e Refrigerantes', '#3a8fd0'],
+  ['cervejas-e-sidras', 'Cervejas e Sidras', '#d4a017'],
+  ['espirituosas', 'Espirituosas', '#8a5a3a'],
+  ['vinhos', 'Vinhos', '#8d2a4a'],
+  ['limpeza', 'Limpeza', '#3aa59a'],
+  ['casa-e-eletrodomesticos', 'Casa e Eletrodomésticos', '#9a9a6a'],
+  ['livraria-e-papelaria', 'Livraria e Papelaria', '#6a7fb0'],
+  ['higiene-pessoal-e-beleza', 'Higiene Pessoal e Beleza', '#d46a9a'],
+  ['bebe-e-crianca', 'Bebé e Criança', '#7fc4c0'],
+  ['parafarmacia', 'Parafarmácia', '#4caf7a'],
   ['animais', 'Animais', '#b07a50'],
+  ['alternativas-alimentares', 'Alternativas Alimentares', '#6aa84f'],
   ['outros', 'Outros', '#8a938c'],
 ];
+const ICONES = {"frutas-e-vegetais": "🍎", "talho": "🥩", "peixaria": "🐟", "padaria-e-pastelaria": "🥖", "charcutaria-e-queijos": "🧀", "ovos": "🥚", "manteiga-margarina-e-natas": "🧈", "iogurtes-e-sobremesas": "🍮", "leite-e-bebidas-vegetais": "🥛", "take-away": "🥡", "congelados": "❄️", "cafe-cha-e-achocolatados": "☕", "bolachas-cereais-e-guloseimas": "🍪", "mercearia": "🫙", "aguas-sumos-e-refrigerantes": "🥤", "cervejas-e-sidras": "🍺", "espirituosas": "🥃", "vinhos": "🍷", "limpeza": "🧽", "casa-e-eletrodomesticos": "🏠", "livraria-e-papelaria": "📚", "higiene-pessoal-e-beleza": "🧴", "bebe-e-crianca": "🍼", "parafarmacia": "💊", "animais": "🐾", "alternativas-alimentares": "🌱", "outros": "🛒"};
 const CAT = Object.fromEntries(CATS.map(([id, nome, cor], i) => [id, { nome, cor, i }]));
 const UNIDS = ['un', 'kg', 'g', 'L', 'emb.', 'dúzia'];
+// palavras que ajudam a adivinhar a categoria de um produto novo
 const PISTAS = {
-  frutas: 'maçã maca pera banana laranja limão limao uva morango kiwi ananás ananas melão melao melancia pêssego pessego tomate alface cebola alho batata cenoura courgette pepino pimento brócolo brocolo couve espinafre cogumelo abóbora abobora feijão-verde salsa coentros fruta legume',
-  padaria: 'pão pao baguete broa bolo croissant tosta pastel bolachas-maria',
-  talho: 'frango peru porco vaca novilho carne bife costeleta entrecosto picada hambúrguer hamburguer febras lombo coelho borrego',
-  peixaria: 'peixe pescada bacalhau salmão salmao dourada robalo sardinha camarão camarao polvo lula atum-fresco carapau',
-  charcutaria: 'fiambre queijo chouriço chourico presunto salsicha mortadela paio bacon',
-  laticinios: 'leite iogurte manteiga natas ovos ovo queijo-fresco requeijão requeijao kefir',
-  mercearia: 'arroz massa esparguete farinha açúcar acucar sal azeite óleo oleo vinagre feijão feijao grão grao lentilhas molho ketchup maionese mostarda especiarias caldo',
-  enlatados: 'atum conserva sardinhas-lata milho cogumelos-lata salsichas-lata polpa',
-  pequeno: 'café cafe chá cha cereais aveia mel compota chocolate bolachas nutella cacau',
-  congelados: 'congelado gelado ervilhas pizza douradinhos',
-  bebidas: 'água agua sumo refrigerante cerveja vinho coca-cola leite-vegetal',
-  higiene: 'champô champo gel-banho sabonete pasta-dentes escova desodorizante papel-higiénico fraldas pensos lâminas laminas creme',
-  limpeza: 'detergente lixívia lixivia amaciador esfregão esfregao limpa-vidros desengordurante pastilhas-máquina',
-  casa: 'guardanapos rolo-cozinha papel-alumínio película sacos-lixo pilhas lâmpada lampada',
-  animais: 'ração racao areia-gato petiscos-cão',
+ "frutas-e-vegetais": "maçã maca pera banana laranja limão limao uva morango kiwi ananás ananas melão melao melancia pêssego pessego tomate alface cebola alho batata cenoura courgette pepino pimento brócolo brocolo couve espinafre cogumelo abóbora abobora feijão-verde salsa coentros fruta legume salada",
+ "talho": "frango peru porco vaca novilho carne bife costeleta entrecosto picada hambúrguer hamburguer febras lombo coelho borrego",
+ "peixaria": "peixe pescada bacalhau salmão salmao dourada robalo sardinha camarão camarao polvo lula carapau",
+ "padaria-e-pastelaria": "pão pao baguete broa bolo croissant tosta pastel",
+ "charcutaria-e-queijos": "fiambre queijo chouriço chourico presunto salsicha mortadela paio bacon",
+ "ovos": "ovos ovo",
+ "manteiga-margarina-e-natas": "manteiga margarina natas",
+ "iogurtes-e-sobremesas": "iogurte iogurtes sobremesa pudim gelatina mousse kefir requeijão requeijao",
+ "leite-e-bebidas-vegetais": "leite bebida-de-aveia bebida-de-soja bebida-de-amêndoa",
+ "take-away": "pizza-fresca refeição refeicao sopa-pronta frango-assado",
+ "congelados": "congelado congeladas gelado ervilhas douradinhos",
+ "cafe-cha-e-achocolatados": "café cafe chá cha cacau achocolatado capsulas cápsulas",
+ "bolachas-cereais-e-guloseimas": "bolachas bolacha cereais aveia chocolate gomas rebuçados doces snacks batatas-fritas",
+ "mercearia": "arroz massa esparguete farinha açúcar acucar sal azeite óleo oleo vinagre feijão feijao grão grao lentilhas molho ketchup maionese mostarda especiarias caldo atum conserva polpa milho mel compota",
+ "aguas-sumos-e-refrigerantes": "água agua sumo refrigerante coca-cola guaraná guarana ice-tea néctar nectar",
+ "cervejas-e-sidras": "cerveja cervejas sidra",
+ "espirituosas": "whisky gin vodka rum aguardente licor",
+ "vinhos": "vinho espumante porto",
+ "limpeza": "detergente lixívia lixivia amaciador esfregão esfregao limpa-vidros desengordurante pastilhas-máquina",
+ "casa-e-eletrodomesticos": "guardanapos rolo-cozinha papel-alumínio película sacos sacos-lixo pilhas lâmpada lampada",
+ "livraria-e-papelaria": "caderno caneta lápis lapis revista",
+ "higiene-pessoal-e-beleza": "champô champo gel-banho sabonete pasta-dentes escova desodorizante papel-higiénico pensos lâminas laminas creme",
+ "bebe-e-crianca": "fraldas toalhitas papa leite-infantil",
+ "parafarmacia": "paracetamol vitaminas pensos-rápidos termómetro",
+ "animais": "ração racao areia-gato petiscos"
 };
 function semAcento(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
 function adivinharCat(nome) {
@@ -254,68 +327,67 @@ function adivinharCat(nome) {
   return 'outros';
 }
 
-// ── Dados guardados neste telemóvel ─────────────────────────────────────────────
-// TODOS inclui os produtos apagados (marcados com apagado:true) para que o apagar
-// também passe para o outro telemóvel quando se juntam as listas.
-const CHAVE = 'listaCompras.v1';
-const INICIAIS = [{"id":"h-acucar","nome":"Açúcar","cat":"mercearia","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-agua","nome":"Água","cat":"bebidas","qtd":6,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-alface","nome":"Alface","cat":"frutas","qtd":2,"unid":"un","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-arroz","nome":"Arroz","cat":"mercearia","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-atum","nome":"Atum em lata","cat":"enlatados","qtd":3,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-azeite","nome":"Azeite","cat":"mercearia","qtd":1,"unid":"L","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-bacalhau","nome":"Bacalhau","cat":"peixaria","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-bananas","nome":"Bananas","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-batatas","nome":"Batatas","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-bolachas","nome":"Bolachas","cat":"pequeno","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-cafe","nome":"Café","cat":"pequeno","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-carne-picada","nome":"Carne picada","cat":"talho","qtd":1,"unid":"kg","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-cebolas","nome":"Cebolas","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-cenouras","nome":"Cenouras","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-cereais","nome":"Cereais","cat":"pequeno","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-champo","nome":"Champô","cat":"higiene","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-det-loica","nome":"Detergente da loiça","cat":"limpeza","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-det-roupa","nome":"Detergente da roupa","cat":"limpeza","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-ervilhas","nome":"Ervilhas congeladas","cat":"congelados","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-febras","nome":"Febras de porco","cat":"talho","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-feijao","nome":"Feijão","cat":"mercearia","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-fiambre","nome":"Fiambre","cat":"charcutaria","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-frango","nome":"Peito de frango","cat":"talho","qtd":1,"unid":"kg","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-gel-banho","nome":"Gel de banho","cat":"higiene","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-iogurtes","nome":"Iogurtes","cat":"laticinios","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-laranjas","nome":"Laranjas","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-leite","nome":"Leite meio-gordo","cat":"laticinios","qtd":6,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-lixivia","nome":"Lixívia","cat":"limpeza","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-macas","nome":"Maçãs","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-manteiga","nome":"Manteiga","cat":"laticinios","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-massa","nome":"Massa","cat":"mercearia","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-ovos","nome":"Ovos","cat":"laticinios","qtd":1,"unid":"dúzia","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-pao","nome":"Pão","cat":"padaria","qtd":3,"unid":"un","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-pao-forma","nome":"Pão de forma","cat":"padaria","qtd":1,"unid":"un","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-papel-hig","nome":"Papel higiénico","cat":"higiene","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-pasta-dentes","nome":"Pasta de dentes","cat":"higiene","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-pescada","nome":"Pescada","cat":"peixaria","qtd":2,"unid":"kg","preco":0,"naLista":true,"comprado":false,"atualizado":1},{"id":"h-polpa","nome":"Polpa de tomate","cat":"enlatados","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-queijo","nome":"Queijo flamengo","cat":"charcutaria","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-rolo-cozinha","nome":"Rolo de cozinha","cat":"casa","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-sacos-lixo","nome":"Sacos do lixo","cat":"casa","qtd":1,"unid":"emb.","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-sal","nome":"Sal","cat":"mercearia","qtd":1,"unid":"un","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-sumo","nome":"Sumo","cat":"bebidas","qtd":1,"unid":"L","preco":0,"naLista":false,"comprado":false,"atualizado":1},{"id":"h-tomate","nome":"Tomate","cat":"frutas","qtd":1,"unid":"kg","preco":0,"naLista":false,"comprado":false,"atualizado":1}];
-let TODOS = [], META = {};
+// ── Estado ────────────────────────────────────────────────────────────────────
+let PRODUTOS = [];          // [{id, nome, cat, qtd, unid, preco, naLista, comprado}]
+let PODE_ESCREVER = true, CARREGADO = true;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const eur = v => (v || 0).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' });
 const num = v => { const n = parseFloat(String(v ?? '').replace(',', '.')); return isFinite(n) ? n : 0; };
 const fmtQtd = q => (Math.round(q * 100) / 100).toLocaleString('pt-PT');
-const vivos = () => TODOS.filter(p => !p.apagado);
-const novoId = () => 'p-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-function limpar(p) {
-  return {
-    id: String(p.id || novoId()).slice(0, 60),
-    nome: String(p.nome || '').trim().slice(0, 80) || 'Sem nome',
-    cat: CAT[p.cat] ? p.cat : 'outros',
-    qtd: num(p.qtd) > 0 ? num(p.qtd) : 1,
-    unid: UNIDS.includes(p.unid) ? p.unid : 'un',
-    preco: Math.max(0, num(p.preco)),
-    naLista: !!p.naLista, comprado: !!p.comprado, apagado: !!p.apagado,
-    atualizado: Number(p.atualizado) || 0,
-  };
-}
-function carregar() {
-  try {
-    const t = localStorage.getItem(CHAVE);
-    if (t) { const d = JSON.parse(t); TODOS = (d.produtos || []).map(limpar); META = d.meta || {}; return; }
-  } catch (e) {}
-  TODOS = INICIAIS.map(limpar); META = {}; guardar();
-}
-function guardar() {
-  try { localStorage.setItem(CHAVE, JSON.stringify({ produtos: TODOS, meta: META })); }
-  catch (e) { nota('Não foi possível guardar neste telemóvel. Verifica se o browser não está em modo privado.'); }
-}
-// se a app estiver aberta em dois separadores, mantém-nos iguais
-window.addEventListener('storage', e => { if (e.key === CHAVE) { carregar(); render(); } });
-
-function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => el.hidden = true, 2600); }
+function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => el.hidden = true, 2200); }
 function nota(t) { $('nota').textContent = t || ''; $('nota').hidden = !t; }
 
-function gravar(id, campos) {
-  const p = TODOS.find(x => x.id === id); if (!p) return;
-  Object.assign(p, campos, { atualizado: Date.now() });
-  guardar(); render();
+// ── Guardar no próprio aparelho (localStorage) ─────────────────────────────────
+const CHAVE = 'lista_compras_v1';
+const SEED = [{"id": "h0", "nome": "Bananas", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h1", "nome": "Maçãs", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2", "nome": "Laranjas", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h3", "nome": "Tomate", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h4", "nome": "Cebolas", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h5", "nome": "Batatas", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h6", "nome": "Alface", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h7", "nome": "Cenouras", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h8", "nome": "Pão", "cat": "padaria-e-pastelaria", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h9", "nome": "Pão de forma", "cat": "padaria-e-pastelaria", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h10", "nome": "Peito de frango", "cat": "talho", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h11", "nome": "Carne picada", "cat": "talho", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h12", "nome": "Febras de porco", "cat": "talho", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h13", "nome": "Pescada", "cat": "peixaria", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h14", "nome": "Bacalhau", "cat": "peixaria", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h15", "nome": "Fiambre", "cat": "charcutaria-e-queijos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h16", "nome": "Queijo flamengo", "cat": "charcutaria-e-queijos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h17", "nome": "Leite meio-gordo", "cat": "leite-e-bebidas-vegetais", "qtd": 6, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h18", "nome": "Iogurtes", "cat": "iogurtes-e-sobremesas", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h19", "nome": "Manteiga", "cat": "manteiga-margarina-e-natas", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h20", "nome": "Ovos", "cat": "ovos", "qtd": 1, "unid": "dúzia", "preco": 0, "naLista": false, "comprado": false}, {"id": "h21", "nome": "Arroz", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h22", "nome": "Massa", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h23", "nome": "Azeite", "cat": "mercearia", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h24", "nome": "Açúcar", "cat": "mercearia", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h25", "nome": "Sal", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h26", "nome": "Feijão", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h27", "nome": "Atum em lata", "cat": "mercearia", "qtd": 3, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h28", "nome": "Polpa de tomate", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h29", "nome": "Café", "cat": "cafe-cha-e-achocolatados", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h30", "nome": "Cereais", "cat": "bolachas-cereais-e-guloseimas", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h31", "nome": "Bolachas", "cat": "bolachas-cereais-e-guloseimas", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h32", "nome": "Ervilhas congeladas", "cat": "congelados", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h33", "nome": "Água", "cat": "aguas-sumos-e-refrigerantes", "qtd": 6, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h34", "nome": "Sumo", "cat": "aguas-sumos-e-refrigerantes", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h35", "nome": "Papel higiénico", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h36", "nome": "Pasta de dentes", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h37", "nome": "Gel de banho", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h38", "nome": "Champô", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h39", "nome": "Detergente da loiça", "cat": "limpeza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h40", "nome": "Detergente da roupa", "cat": "limpeza", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h41", "nome": "Lixívia", "cat": "limpeza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h42", "nome": "Rolo de cozinha", "cat": "casa-e-eletrodomesticos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h43", "nome": "Sacos do lixo", "cat": "casa-e-eletrodomesticos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_0", "nome": "Pêras", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_1", "nome": "Limões", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_2", "nome": "Uvas", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_3", "nome": "Morangos", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_4", "nome": "Kiwis", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_5", "nome": "Alho", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_6", "nome": "Pepino", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_7", "nome": "Pimentos", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_8", "nome": "Brócolos", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_9", "nome": "Courgette", "cat": "frutas-e-vegetais", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_10", "nome": "Bife de vaca", "cat": "talho", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_11", "nome": "Entrecosto", "cat": "talho", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_12", "nome": "Coxas de frango", "cat": "talho", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_13", "nome": "Hambúrgueres", "cat": "talho", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_14", "nome": "Salmão", "cat": "peixaria", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_15", "nome": "Dourada", "cat": "peixaria", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_16", "nome": "Camarão", "cat": "peixaria", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_17", "nome": "Broa", "cat": "padaria-e-pastelaria", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_18", "nome": "Croissants", "cat": "padaria-e-pastelaria", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_19", "nome": "Tostas", "cat": "padaria-e-pastelaria", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_20", "nome": "Presunto", "cat": "charcutaria-e-queijos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_21", "nome": "Chouriço", "cat": "charcutaria-e-queijos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_22", "nome": "Queijo fresco", "cat": "charcutaria-e-queijos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_23", "nome": "Queijo ralado", "cat": "charcutaria-e-queijos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_24", "nome": "Margarina", "cat": "manteiga-margarina-e-natas", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_25", "nome": "Natas", "cat": "manteiga-margarina-e-natas", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_26", "nome": "Iogurtes líquidos", "cat": "iogurtes-e-sobremesas", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_27", "nome": "Gelatina", "cat": "iogurtes-e-sobremesas", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_28", "nome": "Leite magro", "cat": "leite-e-bebidas-vegetais", "qtd": 6, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_29", "nome": "Bebida de aveia", "cat": "leite-e-bebidas-vegetais", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_30", "nome": "Sopa fresca", "cat": "take-away", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_31", "nome": "Frango assado", "cat": "take-away", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_32", "nome": "Pizza congelada", "cat": "congelados", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_33", "nome": "Douradinhos", "cat": "congelados", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_34", "nome": "Gelado", "cat": "congelados", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_35", "nome": "Legumes para sopa congelados", "cat": "congelados", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_36", "nome": "Chá", "cat": "cafe-cha-e-achocolatados", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_37", "nome": "Cápsulas de café", "cat": "cafe-cha-e-achocolatados", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_38", "nome": "Cacau em pó", "cat": "cafe-cha-e-achocolatados", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_39", "nome": "Chocolate", "cat": "bolachas-cereais-e-guloseimas", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_40", "nome": "Batatas fritas", "cat": "bolachas-cereais-e-guloseimas", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_41", "nome": "Esparguete", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_42", "nome": "Farinha", "cat": "mercearia", "qtd": 1, "unid": "kg", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_43", "nome": "Óleo", "cat": "mercearia", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_44", "nome": "Vinagre", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_45", "nome": "Grão-de-bico", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_46", "nome": "Ketchup", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_47", "nome": "Maionese", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_48", "nome": "Mel", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_49", "nome": "Compota", "cat": "mercearia", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_50", "nome": "Água com gás", "cat": "aguas-sumos-e-refrigerantes", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_51", "nome": "Refrigerante de cola", "cat": "aguas-sumos-e-refrigerantes", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_52", "nome": "Ice tea", "cat": "aguas-sumos-e-refrigerantes", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_53", "nome": "Cerveja", "cat": "cervejas-e-sidras", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_54", "nome": "Sidra", "cat": "cervejas-e-sidras", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_55", "nome": "Vinho tinto", "cat": "vinhos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_56", "nome": "Vinho branco", "cat": "vinhos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_57", "nome": "Espumante", "cat": "vinhos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_58", "nome": "Whisky", "cat": "espirituosas", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_59", "nome": "Amaciador", "cat": "limpeza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_60", "nome": "Limpa-vidros", "cat": "limpeza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_61", "nome": "Esfregões", "cat": "limpeza", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_62", "nome": "Pastilhas máquina loiça", "cat": "limpeza", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_63", "nome": "Desengordurante", "cat": "limpeza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_64", "nome": "Guardanapos", "cat": "casa-e-eletrodomesticos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_65", "nome": "Papel de alumínio", "cat": "casa-e-eletrodomesticos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_66", "nome": "Película aderente", "cat": "casa-e-eletrodomesticos", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_67", "nome": "Pilhas", "cat": "casa-e-eletrodomesticos", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_68", "nome": "Caderno", "cat": "livraria-e-papelaria", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_69", "nome": "Canetas", "cat": "livraria-e-papelaria", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_70", "nome": "Desodorizante", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_71", "nome": "Sabonete", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_72", "nome": "Escova de dentes", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_73", "nome": "Lâminas de barbear", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_74", "nome": "Creme hidratante", "cat": "higiene-pessoal-e-beleza", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_75", "nome": "Fraldas", "cat": "bebe-e-crianca", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_76", "nome": "Toalhitas", "cat": "bebe-e-crianca", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_77", "nome": "Paracetamol", "cat": "parafarmacia", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_78", "nome": "Pensos rápidos", "cat": "parafarmacia", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_79", "nome": "Vitaminas", "cat": "parafarmacia", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_80", "nome": "Ração para cão", "cat": "animais", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_81", "nome": "Ração para gato", "cat": "animais", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_82", "nome": "Areia para gato", "cat": "animais", "qtd": 1, "unid": "emb.", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_83", "nome": "Bebida de soja", "cat": "alternativas-alimentares", "qtd": 1, "unid": "L", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_84", "nome": "Pão sem glúten", "cat": "alternativas-alimentares", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}, {"id": "h2_85", "nome": "Tofu", "cat": "alternativas-alimentares", "qtd": 1, "unid": "un", "preco": 0, "naLista": false, "comprado": false}];
+// Produtos apagados ficam registados para que o apagar também passe para o outro telemóvel
+let APAGADOS = [];   // [{id, nome, atualizado}]
+let META = {};
+try { APAGADOS = JSON.parse(localStorage.getItem(CHAVE + '_apagados') || '[]') || []; } catch (e) { APAGADOS = []; }
+try { META = JSON.parse(localStorage.getItem(CHAVE + '_meta') || '{}') || {}; } catch (e) { META = {}; }
+function salvarExtra() { try { localStorage.setItem(CHAVE + '_apagados', JSON.stringify(APAGADOS)); localStorage.setItem(CHAVE + '_meta', JSON.stringify(META)); } catch (e) {} }
+function salvar() { salvarExtra(); try { localStorage.setItem(CHAVE, JSON.stringify(PRODUTOS)); } catch (e) { nota('Não foi possível guardar neste aparelho (memória do browser cheia ou bloqueada).'); } }
+// Categorias da versão anterior → categorias do Pingo Doce
+const CATS_ANTIGAS = {"frutas": "frutas-e-vegetais", "padaria": "padaria-e-pastelaria", "charcutaria": "charcutaria-e-queijos", "laticinios": "leite-e-bebidas-vegetais", "enlatados": "mercearia", "pequeno": "bolachas-cereais-e-guloseimas", "bebidas": "aguas-sumos-e-refrigerantes", "higiene": "higiene-pessoal-e-beleza", "casa": "casa-e-eletrodomesticos"};
+function migrar(p) {
+  if (CAT[p.cat]) return p;
+  const g = adivinharCat(p.nome);
+  p.cat = g !== 'outros' ? g : (CATS_ANTIGAS[p.cat] || 'outros');
+  return p;
 }
-function criar(nome, cat) {
-  TODOS.push({ id: novoId(), nome, cat, qtd: 1, unid: 'un', preco: 0, naLista: true, comprado: false, apagado: false, atualizado: Date.now() });
-  guardar(); render();
+const VERSAO_HABITUAIS = 2;
+function carregar() {
+  let lista = null;
+  try { const t = localStorage.getItem(CHAVE); if (t) lista = JSON.parse(t).map(migrar); } catch (e) {}
+  if (!lista) lista = SEED.map(p => Object.assign({}, p));
+  let v = 0; try { v = +(localStorage.getItem(CHAVE + '_versao') || 0); } catch (e) {}
+  if (v < VERSAO_HABITUAIS) {
+    const tem = new Set(lista.map(p => semAcento(p.nome)));
+    SEED.forEach(p => { if (!tem.has(semAcento(p.nome))) lista.push(Object.assign({}, p)); });
+    try { localStorage.setItem(CHAVE + '_versao', String(VERSAO_HABITUAIS)); localStorage.setItem(CHAVE, JSON.stringify(lista)); } catch (e) {}
+  }
+  return lista;
+}
+function gravar(id, campos) {
+  const p = PRODUTOS.find(x => x.id === id); if (p) Object.assign(p, campos, { atualizado: Date.now() });
+  salvar(); render();
+}
+function criar(nome, cat, extra) {
+  APAGADOS = APAGADOS.filter(a => semAcento(a.nome) !== semAcento(nome));
+  PRODUTOS.push(Object.assign({ id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), nome, cat, qtd: 1, unid: 'un', preco: 0, naLista: true, comprado: false, atualizado: Date.now() }, extra || {}));
+  salvar(); render();
 }
 
 // ── Acrescentar ─────────────────────────────────────────────────────────────────
-function encontrar(nome, todos) { const n = semAcento(nome); return (todos ? TODOS : vivos()).find(p => semAcento(p.nome) === n); }
+function encontrar(nome) { const n = semAcento(nome); return PRODUTOS.find(p => semAcento(p.nome) === n); }
 function acrescentar(nome, cat) {
   nome = nome.trim().replace(/\s+/g, ' ');
-  if (!nome) return;
+  if (!nome || !PODE_ESCREVER) return;
   nome = nome[0].toUpperCase() + nome.slice(1);
-  const p = encontrar(nome, true);
-  if (p && p.apagado) { gravar(p.id, { apagado: false, naLista: true, comprado: false, qtd: 1, cat: cat || p.cat }); toast(`${p.nome} acrescentado`); }
-  else if (p) {
+  const p = encontrar(nome);
+  if (p) {
     if (p.naLista && !p.comprado) gravar(p.id, { qtd: (p.qtd || 0) + 1 });
     else gravar(p.id, { naLista: true, comprado: false, qtd: p.qtd > 0 ? p.qtd : 1 });
     toast(`${p.nome} na lista`);
@@ -331,24 +403,24 @@ $('add-nome').addEventListener('input', () => {
   if (!q) { $('sugs').hidden = true; $('add-cat').value = 'auto'; return; }
   const ex = encontrar($('add-nome').value);
   $('add-cat').value = ex ? ex.cat : adivinharCat($('add-nome').value);
-  const s = vivos().filter(p => semAcento(p.nome).includes(q)).sort((a, b) => semAcento(a.nome).indexOf(q) - semAcento(b.nome).indexOf(q)).slice(0, 6);
+  const s = PRODUTOS.filter(p => semAcento(p.nome).includes(q)).sort((a, b) => semAcento(a.nome).indexOf(q) - semAcento(b.nome).indexOf(q)).slice(0, 6);
   $('sugs').innerHTML = s.map(p => `<button type="button" data-id="${esc(p.id)}"><span>${esc(p.nome)}</span><small>${p.naLista && !p.comprado ? 'já na lista' : esc(CAT[p.cat]?.nome || '')}</small></button>`).join('');
   $('sugs').hidden = !s.length;
 });
 $('sugs').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  const p = TODOS.find(x => x.id === b.dataset.id); if (p) acrescentar(p.nome, p.cat);
+  const p = PRODUTOS.find(x => x.id === b.dataset.id); if (p) acrescentar(p.nome, p.cat);
   $('add-nome').value = ''; $('sugs').hidden = true; $('add-nome').focus();
 });
 document.addEventListener('click', e => { if (!e.target.closest('#f-add')) $('sugs').hidden = true; });
 
 // ── Texto da lista (WhatsApp / copiar) ──────────────────────────────────────────
 function textoLista() {
-  const falta = vivos().filter(p => p.naLista && !p.comprado);
+  const falta = PRODUTOS.filter(p => p.naLista && !p.comprado);
   if (!falta.length) return 'Lista de compras: não falta nada!';
   const linhas = ['🛒 *Lista de compras*'];
   CATS.forEach(([id, nome]) => {
-    const it = falta.filter(p => p.cat === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    const it = falta.filter(p => (CAT[p.cat] ? p.cat : 'outros') === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
     if (!it.length) return;
     linhas.push('', `*${nome}*`);
     it.forEach(p => linhas.push(`• ${p.nome} — ${fmtQtd(p.qtd || 1)} ${p.unid || 'un'}`));
@@ -367,181 +439,156 @@ $('copiar').addEventListener('click', async () => {
   }
 });
 
-// ── Enviar ficheiro ─────────────────────────────────────────────────────────────
-// .txt porque é o tipo de ficheiro que o Android e o iPhone deixam partilhar sem problemas.
-function dataHora(t) { return new Date(t).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
-$('enviar').addEventListener('click', async () => {
-  const agora = new Date();
-  const p2 = n => String(n).padStart(2, '0');
-  const nome = `lista-compras-${agora.getFullYear()}-${p2(agora.getMonth() + 1)}-${p2(agora.getDate())}-${p2(agora.getHours())}${p2(agora.getMinutes())}.txt`;
-  const conteudo = JSON.stringify({ app: 'lista-compras', v: 1, enviado: Date.now(), produtos: TODOS });
-  const fich = new File([conteudo], nome, { type: 'text/plain' });
-  let partilhado = false;
-  if (navigator.canShare && navigator.canShare({ files: [fich] })) {
-    try { await navigator.share({ files: [fich], title: 'Lista de compras' }); partilhado = true; }
-    catch (e) { if (e.name === 'AbortError') return; }
-  }
-  if (!partilhado) {
-    const a = document.createElement('a'); a.href = URL.createObjectURL(fich); a.download = nome;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    toast('Ficheiro guardado nas Transferências. Envia-o pelo WhatsApp.');
-  } else toast('Lista enviada');
-  META.ultimoEnvio = Date.now(); guardar(); render();
-});
-
-// ── Juntar ficheiro recebido ────────────────────────────────────────────────────
-let DESFAZER = null;
-function juntar(texto) {
-  let d;
-  try { d = JSON.parse(texto); } catch (e) { d = null; }
-  if (!d || d.app !== 'lista-compras' || !Array.isArray(d.produtos)) {
-    mostrarRes('Este ficheiro não é uma lista desta app. Confirma que escolheste o ficheiro "lista-compras-….txt".', false); return;
-  }
-  const antes = JSON.stringify(TODOS);
-  let novos = 0, mudados = 0;
-  for (const bruto of d.produtos) {
-    const r = limpar(bruto);
-    const l = TODOS.find(x => x.id === r.id) || TODOS.find(x => semAcento(x.nome) === semAcento(r.nome));
-    if (!l) { TODOS.push(r); if (!r.apagado) novos++; continue; }
-    const id = l.id < r.id ? l.id : r.id;     // os dois telemóveis acabam com o mesmo id
-    if (r.atualizado > l.atualizado) {
-      const igual = ['nome', 'cat', 'qtd', 'unid', 'preco', 'naLista', 'comprado', 'apagado'].every(k => l[k] === r[k]);
-      Object.assign(l, r, { id }); if (!igual) mudados++;
-    } else l.id = id;
-  }
-  // se o mesmo produto ficou duas vezes (mesmo nome), fica só o mais recente
-  const vistos = {};
-  TODOS = TODOS.sort((a, b) => b.atualizado - a.atualizado).filter(p => { const k = p.apagado ? 'x' + p.id : semAcento(p.nome); if (vistos[k]) return false; vistos[k] = 1; return true; });
-  DESFAZER = antes;
-  META.ultimaJuncao = Date.now();
-  guardar(); render();
-  const enviadoEm = d.enviado ? ` (enviada a ${dataHora(d.enviado)})` : '';
-  mostrarRes(novos || mudados
-    ? `Lista junta${enviadoEm}: <b>${novos}</b> produto${novos === 1 ? '' : 's'} novo${novos === 1 ? '' : 's'} e <b>${mudados}</b> atualizado${mudados === 1 ? '' : 's'}.`
-    : `As listas já estavam iguais${enviadoEm}. Não mudou nada.`, novos || mudados);
-}
-function mostrarRes(html, podeDesfazer) {
-  $('res').innerHTML = `<div>${html}</div>` + (podeDesfazer && DESFAZER ? `<button class="btn ghost" type="button" id="desfazer">Desfazer</button>` : '');
-  $('res').hidden = false;
-  if (location.hash !== '#partilhar') location.hash = '#partilhar';
-}
-$('res').addEventListener('click', e => {
-  if (e.target.id !== 'desfazer' || !DESFAZER) return;
-  TODOS = JSON.parse(DESFAZER).map(limpar); DESFAZER = null; guardar(); render();
-  $('res').innerHTML = '<div>Desfeito: a lista voltou a ficar como estava.</div>';
-});
-$('juntar').addEventListener('click', () => $('ficheiro').click());
-$('ficheiro').addEventListener('change', async () => {
-  const f = $('ficheiro').files[0]; $('ficheiro').value = '';
-  if (!f) return;
-  try { juntar(await f.text()); } catch (e) { mostrarRes('Não foi possível ler o ficheiro.', false); }
-});
-// ficheiro recebido pela partilha do Android (ver sw.js)
-async function verPartilhado() {
-  if (!new URLSearchParams(location.search).has('importar')) return;
-  history.replaceState(null, '', location.pathname + '#partilhar');
-  try {
-    const c = await caches.open('partilha');
-    const url = new URL('ficheiro-partilhado', location.href).href;
-    const r = await c.match(url);
-    if (r) { juntar(await r.text()); await c.delete(url); }
-  } catch (e) { mostrarRes('Não foi possível ler o ficheiro partilhado. Usa "Escolher ficheiro recebido".', false); }
-}
-
 // ── Desenhar ──────────────────────────────────────────────────────────────────
 const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>';
-function vista() { return location.hash === '#habituais' ? 'hab' : location.hash === '#partilhar' ? 'par' : 'lista'; }
+function vista() { return location.hash === '#habituais' ? 'hab' : location.hash === '#precos' ? 'precos' : location.hash === '#partilhar' ? 'par' : 'lista'; }
+
+// ── Categorias que abrem/fecham (fica guardado em cada aparelho) ──
+// Nos Habituais começam fechadas (são muitos produtos); na Lista e nos Preços começam abertas.
+let ABERTAS = {};
+try { ABERTAS = JSON.parse(localStorage.getItem('lista_compras_cats') || '{}') || {}; } catch (e) { ABERTAS = {}; }
+const catAberta = (v, id) => (v + ':' + id) in ABERTAS ? ABERTAS[v + ':' + id] : v !== 'habs';
+function guardarAbertas() { try { localStorage.setItem('lista_compras_cats', JSON.stringify(ABERTAS)); } catch (e) {} }
+function cabCat(v, id, nome, cor, extra, forcarAberta) {
+  const ab = forcarAberta || catAberta(v, id);
+  return `<section class="aisle${ab ? '' : ' fechada'}"><h2 class="tg" data-acao="cat" data-v="${v}" data-cat="${id}" role="button" tabindex="0" aria-expanded="${ab}"><span class="sv" aria-hidden="true">▼</span><span class="ico" style="background:${cor}22;border-color:${cor}55" aria-hidden="true">${ICONES[id] || '🛒'}</span>${esc(nome)}${extra ? `<span class="n">${extra}</span>` : ''}</h2><div class="items">`;
+}
 
 function render() {
   const v = vista();
-  $('v-lista').hidden = v !== 'lista'; $('v-hab').hidden = v !== 'hab'; $('v-par').hidden = v !== 'par';
-  [['t-lista', 'lista'], ['t-hab', 'hab'], ['t-par', 'par']].forEach(([el, k]) => { if (v === k) $(el).setAttribute('aria-current', 'page'); else $(el).removeAttribute('aria-current'); });
+  $('v-lista').hidden = v !== 'lista'; $('v-hab').hidden = v !== 'hab';
+  $('t-lista').toggleAttribute('aria-current', v === 'lista'); if (v === 'lista') $('t-lista').setAttribute('aria-current', 'page');
+  $('t-hab').toggleAttribute('aria-current', v === 'hab'); if (v === 'hab') $('t-hab').setAttribute('aria-current', 'page');
+  $('v-precos').hidden = v !== 'precos';
+  $('v-par').hidden = v !== 'par';
+  if (v === 'par') $('t-par').setAttribute('aria-current', 'page'); else $('t-par').removeAttribute('aria-current');
+  $('estado').textContent = [META.ultimoEnvio ? 'Último envio: ' + dataHora(META.ultimoEnvio) : '', META.ultimaJuncao ? 'Última junção: ' + dataHora(META.ultimaJuncao) : ''].filter(Boolean).join(' · ');
+  $('t-precos').toggleAttribute('aria-current', v === 'precos'); if (v === 'precos') $('t-precos').setAttribute('aria-current', 'page');
 
-  const PROD = vivos();
-  const naLista = PROD.filter(p => p.naLista);
+  const naLista = PRODUTOS.filter(p => p.naLista);
   const falta = naLista.filter(p => !p.comprado), carrinho = naLista.filter(p => p.comprado);
   const total = naLista.reduce((s, p) => s + (p.preco || 0) * (p.qtd || 0), 0);
   const noCarro = carrinho.reduce((s, p) => s + (p.preco || 0) * (p.qtd || 0), 0);
   $('sum').innerHTML = `<span class="pill"><b>${falta.length}</b> por comprar</span><span class="pill"><b>${carrinho.length}</b> no carrinho</span>` +
-    `<span class="pill total">Total <b>${eur(total)}</b></span>` + (noCarro > 0 ? `<span class="pill">No carrinho <b>${eur(noCarro)}</b></span>` : '');
+    `<span class="pill total">Total estimado <b>${eur(total)}</b></span>` + (noCarro > 0 ? `<span class="pill">No carrinho <b>${eur(noCarro)}</b></span>` : '');
   $('wa').href = 'https://wa.me/?text=' + encodeURIComponent(textoLista());
-  $('estado').textContent = [META.ultimoEnvio ? 'Último envio: ' + dataHora(META.ultimoEnvio) : '', META.ultimaJuncao ? 'Última junção: ' + dataHora(META.ultimaJuncao) : ''].filter(Boolean).join(' · ');
 
-  if (!naLista.length) $('lista').innerHTML = `<div class="empty"><strong>A lista está vazia</strong>Escreve um produto em cima, ou abre <a href="#habituais">Habituais</a> e toca nos que precisas de comprar.</div>`;
+  // Lista
+  if (!CARREGADO) $('lista').innerHTML = `<div class="empty"><strong>A carregar a lista…</strong>Os produtos aparecem aqui assim que a lista abrir.</div>`;
+  else if (!naLista.length) $('lista').innerHTML = `<div class="empty"><strong>A lista está vazia</strong>Escreve um produto em cima, ou abre <a href="#habituais">Produtos habituais</a> e toca nos que precisas de comprar.</div>`;
   else $('lista').innerHTML = CATS.map(([id, nome, cor]) => {
-    const it = naLista.filter(p => p.cat === id).sort((a, b) => (a.comprado - b.comprado) || a.nome.localeCompare(b.nome, 'pt'));
+    const it = naLista.filter(p => (CAT[p.cat] ? p.cat : 'outros') === id)
+      .sort((a, b) => (a.comprado - b.comprado) || a.nome.localeCompare(b.nome, 'pt'));
     if (!it.length) return '';
     const n = it.filter(p => !p.comprado).length;
-    return `<section class="aisle"><h2><span class="dot" style="background:${cor}"></span>${esc(nome)}<span class="n">${n ? n + ' por comprar' : 'tudo no carrinho'}</span></h2><div class="items">` +
+    return cabCat('lista', id, nome, cor, n ? n + ' por comprar' : 'tudo no carrinho') +
       it.map(p => `<div class="item${p.comprado ? ' done' : ''}">
-        <button class="chk" type="button" data-acao="comprado" data-id="${esc(p.id)}" aria-label="${p.comprado ? 'Tirar do carrinho' : 'Pôr no carrinho'}: ${esc(p.nome)}"><span>${ICON_OK}</span></button>
+        <button class="chk" type="button" data-acao="comprado" data-id="${esc(p.id)}" aria-label="${p.comprado ? 'Tirar do carrinho' : 'Pôr no carrinho'}: ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}><span>${ICON_OK}</span></button>
         <button class="name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')}${p.preco ? ' · ' + eur(p.preco) + (p.qtd && p.qtd !== 1 ? ' = ' + eur(p.preco * p.qtd) : '') : ''}</small></button>
-        <div class="qty"><button type="button" data-acao="menos" data-id="${esc(p.id)}" aria-label="Menos ${esc(p.nome)}">−</button><output>${fmtQtd(p.qtd || 0)}</output><button type="button" data-acao="mais" data-id="${esc(p.id)}" aria-label="Mais ${esc(p.nome)}">+</button></div>
+        <div class="qty"><button type="button" data-acao="menos" data-id="${esc(p.id)}" aria-label="Menos ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>−</button><output>${fmtQtd(p.qtd || 0)}</output><button type="button" data-acao="mais" data-id="${esc(p.id)}" aria-label="Mais ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>+</button></div>
       </div>`).join('') + `</div></section>`;
   }).join('');
 
+  // Barra de baixo (terminar compra)
   const bar = $('bar');
-  if (v === 'lista' && carrinho.length) {
+  if (v === 'lista' && carrinho.length && PODE_ESCREVER) {
     bar.hidden = false;
     if (!render.confTerminar) $('bar-in').innerHTML = `<button class="btn" type="button" data-acao="terminar">Terminar compra (${carrinho.length} no carrinho)</button>`;
     else $('bar-in').innerHTML = `<p>Tirar da lista os ${carrinho.length} produtos que já estão no carrinho? Ficam guardados nos habituais.</p><button class="btn" type="button" data-acao="terminar-sim">Sim, terminar</button><button class="btn ghost" type="button" data-acao="terminar-nao">Cancelar</button>`;
   } else { bar.hidden = true; render.confTerminar = false; }
 
+  // Habituais
   const q = semAcento($('pesq').value);
-  const habs = PROD.filter(p => !q || semAcento(p.nome).includes(q));
-  if (!PROD.length) $('habs').innerHTML = `<div class="empty"><strong>Ainda não há produtos habituais</strong>Cada produto que acrescentas à lista fica guardado aqui, para o voltares a pôr com um toque.</div>`;
+  const habs = PRODUTOS.filter(p => !q || semAcento(p.nome).includes(q));
+  if (!CARREGADO) $('habs').innerHTML = `<div class="empty"><strong>A carregar…</strong></div>`;
+  else if (!PRODUTOS.length) $('habs').innerHTML = `<div class="empty"><strong>Ainda não há produtos habituais</strong>Cada produto que acrescentas à lista fica guardado aqui, para o voltares a pôr com um toque.</div>`;
   else if (!habs.length) $('habs').innerHTML = `<div class="empty"><strong>Nada encontrado</strong>Escreve outro nome, ou acrescenta-o na Lista.</div>`;
   else $('habs').innerHTML = CATS.map(([id, nome, cor]) => {
-    const it = habs.filter(p => p.cat === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    const it = habs.filter(p => (CAT[p.cat] ? p.cat : 'outros') === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
     if (!it.length) return '';
-    return `<section class="aisle"><h2><span class="dot" style="background:${cor}"></span>${esc(nome)}<span class="n">${it.length}</span></h2><div class="items">` +
+    const nl = it.filter(p => p.naLista && !p.comprado).length;
+    return cabCat('habs', id, nome, cor, (nl ? '✓ ' + nl + ' na lista · ' : '') + it.length, !!q) +
       it.map(p => { const on = p.naLista && !p.comprado; return `<div class="hab"><div><b>${esc(p.nome)}</b><small>${esc(p.unid || 'un')}${p.preco ? ' · ' + eur(p.preco) : ''}</small></div>
-        <button class="tog${on ? ' on' : ''}" type="button" data-acao="tog" data-id="${esc(p.id)}">${on ? '✓ Na lista' : '+ Lista'}</button>
+        <button class="tog${on ? ' on' : ''}" type="button" data-acao="tog" data-id="${esc(p.id)}"${PODE_ESCREVER ? '' : ' disabled'}>${on ? '✓ Na lista' : '+ Lista'}</button>
         <button class="edit" type="button" data-acao="editar" data-id="${esc(p.id)}" aria-label="Editar ${esc(p.nome)}">${ICON_EDIT}</button></div>`; }).join('') + `</div></section>`;
+  }).join('');
+
+  // Preços (Pingo Doce)
+  // continuam aqui mesmo depois de irem para o carrinho; só saem com "Terminar compra"
+  const pr = PRODUTOS.filter(p => p.naLista);
+  const semPreco = pr.filter(p => !p.preco).length;
+  if (!pr.length) $('precos').innerHTML = `<div class="empty"><strong>A lista está vazia</strong>Acrescenta produtos à <a href="#lista">Lista</a> para veres aqui os preços.</div>`;
+  else $('precos').innerHTML = (semPreco ? `<p class="intro">${semPreco} produto(s) ainda sem preço.</p>` : '') + CATS.map(([id, nome, cor]) => {
+    const it = pr.filter(p => (CAT[p.cat] ? p.cat : 'outros') === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
+    if (!it.length) return '';
+    return cabCat('precos', id, nome, cor, it.length) +
+      it.map(p => `<div class="pr">
+        <button class="nm name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')} · ${p.preco ? eur(p.preco) + ' / ' + esc(p.unid || 'un') + (p.precoData ? ' · visto em ' + esc(p.precoData) : '') : 'sem preço'}${p.linkPD ? ' · 🔗 link guardado' : ''}${p.comprado ? ' · ✓ no carrinho' : ''}</small></button>
+        <a class="pd" href="${esc(urlPingoDoce(p))}" target="_blank" rel="noopener">${p.linkPD ? 'Ver produto' : 'Pingo Doce'} ↗</a>
+        <form data-preco="${esc(p.id)}"><input inputmode="decimal" placeholder="Preço (€) por ${esc(p.unid || 'un')}" value="${p.preco ? String(p.preco).replace('.', ',') : ''}" aria-label="Preço de ${esc(p.nome)}"><button class="btn" type="submit">Guardar</button></form>
+      </div>`).join('') + `</div></section>`;
   }).join('');
 }
 
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-acao]'); if (!b) return;
-  const id = b.dataset.id, p = TODOS.find(x => x.id === id), a = b.dataset.acao;
+  const id = b.dataset.id, p = PRODUTOS.find(x => x.id === id), a = b.dataset.acao;
+  if (a === 'cat') { const k = b.dataset.v + ':' + b.dataset.cat; ABERTAS[k] = !catAberta(b.dataset.v, b.dataset.cat); guardarAbertas(); const sec = b.closest('.aisle'); sec.classList.toggle('fechada', !ABERTAS[k]); b.setAttribute('aria-expanded', ABERTAS[k]); return; }
+  if (a === 'abrir-todas' || a === 'fechar-todas') { CATS.forEach(([cid]) => ABERTAS[b.dataset.v + ':' + cid] = a === 'abrir-todas'); guardarAbertas(); render(); return; }
   if (a === 'editar' && p) return abrirEditar(p);
-  if (a === 'comprado' && p) gravar(id, { comprado: !p.comprado });
+  if (!PODE_ESCREVER) return;
+  if (a === 'comprado' && p) gravar(id, { comprado: !p.comprado }, true);
   else if (a === 'mais' && p) gravar(id, { qtd: Math.round(((p.qtd || 0) + 1) * 100) / 100 });
   else if (a === 'menos' && p) {
     const q = Math.round(((p.qtd || 0) - 1) * 100) / 100;
-    if (q <= 0) { gravar(id, { naLista: false, comprado: false, qtd: 1 }); toast(`${p.nome} saiu da lista`); }
+    if (q <= 0) { gravar(id, { naLista: false, comprado: false, qtd: 1 }, true); toast(`${p.nome} saiu da lista`); }
     else gravar(id, { qtd: q });
   }
   else if (a === 'tog' && p) {
     const on = p.naLista && !p.comprado;
-    gravar(id, on ? { naLista: false, comprado: false } : { naLista: true, comprado: false, qtd: p.qtd > 0 ? p.qtd : 1 });
+    gravar(id, on ? { naLista: false, comprado: false } : { naLista: true, comprado: false, qtd: p.qtd > 0 ? p.qtd : 1 }, true);
   }
   else if (a === 'terminar') { render.confTerminar = true; render(); }
   else if (a === 'terminar-nao') { render.confTerminar = false; render(); }
   else if (a === 'terminar-sim') {
     render.confTerminar = false;
-    const c = vivos().filter(x => x.naLista && x.comprado), t = Date.now();
-    c.forEach(x => Object.assign(x, { naLista: false, comprado: false, qtd: 1, atualizado: t }));
-    guardar(); render();
+    const c = PRODUTOS.filter(x => x.naLista && x.comprado);
+    c.forEach(x => gravar(x.id, { naLista: false, comprado: false, qtd: 1 }, true));
     toast(`Compra terminada: ${c.length} produtos arrumados`);
   }
 });
 $('pesq').addEventListener('input', render);
+// Abre o produto no site do Pingo Doce: a página do produto, se guardaste o link; senão, a pesquisa do site
+function urlPingoDoce(p) {
+  if (p.linkPD && /^https:\/\/(www\.)?pingodoce\.pt\//.test(p.linkPD)) return p.linkPD;
+  return 'https://www.pingodoce.pt/on/demandware.store/Sites-pingo-doce-Site/default/Search-Show?q=' + encodeURIComponent(p.nome);
+}
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-preco]'); if (!f) return;
+  e.preventDefault();
+  const v = Math.max(0, num(f.querySelector('input').value));
+  const hoje = new Date().toLocaleDateString('pt-PT');
+  const p = PRODUTOS.find(x => x.id === f.dataset.preco);
+  gravar(f.dataset.preco, { preco: v, precoData: v ? hoje : '' });
+  toast(v ? `Preço de ${p ? p.nome : ''} guardado` : 'Preço apagado');
+});
 window.addEventListener('hashchange', render);
 
 // ── Editar ──────────────────────────────────────────────────────────────────────
 let EDIT = null;
-$('e-cat').innerHTML = CATS.map(([id, n]) => `<option value="${id}">${n}</option>`).join('');
-$('add-cat').innerHTML = '<option value="auto">Categoria automática</option>' + CATS.map(([id, n]) => `<option value="${id}">${n}</option>`).join('');
+$('e-cat').innerHTML = CATS.map(([id, n]) => `<option value="${id}">${ICONES[id] || ''} ${n}</option>`).join('');
+$('add-cat').innerHTML = '<option value="auto">Categoria automática</option>' + CATS.map(([id, n]) => `<option value="${id}">${ICONES[id] || ''} ${n}</option>`).join('');
 $('e-unid').innerHTML = UNIDS.map(u => `<option>${u}</option>`).join('');
 function abrirEditar(p) {
   EDIT = p.id;
   $('e-tit').textContent = p.nome;
-  $('e-nome').value = p.nome; $('e-cat').value = p.cat;
-  $('e-qtd').value = fmtQtd(p.qtd || 1); $('e-unid').value = p.unid;
+  $('e-nome').value = p.nome; $('e-cat').value = CAT[p.cat] ? p.cat : 'outros';
+  $('e-qtd').value = fmtQtd(p.qtd || 1); $('e-unid').value = UNIDS.includes(p.unid) ? p.unid : 'un';
   $('e-preco').value = p.preco ? String(p.preco).replace('.', ',') : '';
+  $('e-link').value = p.linkPD || '';
   $('e-tirar').hidden = !p.naLista; $('e-conf').hidden = true;
+  $('f-edit').querySelectorAll('input,select,#e-tirar,#e-apagar,[type=submit]').forEach(el => el.disabled = !PODE_ESCREVER);
   $('sheet').hidden = false;
 }
 function fecharEditar() { $('sheet').hidden = true; EDIT = null; }
@@ -552,23 +599,121 @@ $('f-edit').addEventListener('submit', e => {
   e.preventDefault(); if (!EDIT) return;
   const nome = $('e-nome').value.trim(); if (!nome) return;
   const q = num($('e-qtd').value);
-  gravar(EDIT, { nome, cat: $('e-cat').value, qtd: q > 0 ? q : 1, unid: $('e-unid').value, preco: Math.max(0, num($('e-preco').value)) });
+  gravar(EDIT, { nome, cat: $('e-cat').value, qtd: q > 0 ? q : 1, unid: $('e-unid').value, preco: Math.max(0, num($('e-preco').value)), linkPD: /^https:\/\/(www\.)?pingodoce\.pt\//.test($('e-link').value.trim()) ? $('e-link').value.trim() : '' }, true);
   fecharEditar(); toast('Guardado');
 });
-$('e-tirar').addEventListener('click', () => { if (!EDIT) return; gravar(EDIT, { naLista: false, comprado: false }); fecharEditar(); toast('Saiu da lista'); });
+$('e-tirar').addEventListener('click', () => { if (!EDIT) return; gravar(EDIT, { naLista: false, comprado: false }, true); fecharEditar(); toast('Saiu da lista'); });
 $('e-apagar').addEventListener('click', () => { $('e-conf').hidden = false; });
 $('e-nao').addEventListener('click', () => { $('e-conf').hidden = true; });
-$('e-sim').addEventListener('click', () => {
+$('e-sim').addEventListener('click', async () => {
   const id = EDIT; if (!id) return;
-  fecharEditar(); gravar(id, { apagado: true, naLista: false, comprado: false }); toast('Produto apagado');
+  fecharEditar();
+  const pa = PRODUTOS.find(p => p.id === id);
+  if (pa) APAGADOS.push({ id, nome: pa.nome, atualizado: Date.now() });
+  PRODUTOS = PRODUTOS.filter(p => p.id !== id); salvar(); render(); toast('Produto apagado');
 });
 
-// ── Arranque ────────────────────────────────────────────────────────────────────
-carregar();
+// ── Enviar e juntar listas (WhatsApp) ─────────────────────────────────────────
+// O ficheiro é .txt porque é o tipo que o Android e o iPhone deixam partilhar sem problemas.
+function dataHora(t) { return new Date(t).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+$('enviar').addEventListener('click', async () => {
+  const a = new Date(), d2 = n => String(n).padStart(2, '0');
+  const nome = `lista-compras-${a.getFullYear()}-${d2(a.getMonth() + 1)}-${d2(a.getDate())}-${d2(a.getHours())}${d2(a.getMinutes())}.txt`;
+  const fich = new File([JSON.stringify({ app: 'lista-compras', v: 2, enviado: Date.now(), produtos: PRODUTOS, apagados: APAGADOS })], nome, { type: 'text/plain' });
+  let ok = false;
+  if (navigator.canShare && navigator.canShare({ files: [fich] })) {
+    try { await navigator.share({ files: [fich], title: 'Lista de compras' }); ok = true; }
+    catch (e) { if (e.name === 'AbortError') return; }
+  }
+  if (!ok) {
+    const l = document.createElement('a'); l.href = URL.createObjectURL(fich); l.download = nome;
+    document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(l.href), 5000);
+    toast('Ficheiro guardado nas Transferências. Envia-o pelo WhatsApp.');
+  } else toast('Lista enviada');
+  META.ultimoEnvio = Date.now(); salvarExtra(); render();
+});
+
+function limparProd(p) {
+  const r = {
+    id: String(p.id || ('p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6))).slice(0, 60),
+    nome: String(p.nome || '').trim().slice(0, 80) || 'Sem nome',
+    cat: p.cat, qtd: num(p.qtd) > 0 ? num(p.qtd) : 1, unid: UNIDS.includes(p.unid) ? p.unid : 'un',
+    preco: Math.max(0, num(p.preco)), naLista: !!p.naLista, comprado: !!p.comprado, atualizado: Number(p.atualizado) || 0,
+  };
+  if (p.precoData) r.precoData = String(p.precoData).slice(0, 20);
+  if (p.linkPD && /^https:\/\/(www\.)?pingodoce\.pt\//.test(p.linkPD)) r.linkPD = String(p.linkPD);
+  return migrar(r);
+}
+let DESFAZER = null;
+function juntar(texto) {
+  let d; try { d = JSON.parse(texto); } catch (e) { d = null; }
+  if (!d || d.app !== 'lista-compras' || !Array.isArray(d.produtos)) { mostrarRes('Este ficheiro não é uma lista desta app. Confirma que escolheste o ficheiro "lista-compras-….txt".', false); return; }
+  const antes = JSON.stringify({ p: PRODUTOS, a: APAGADOS });
+  let novos = 0, mudados = 0, tirados = 0;
+  const mesmo = (x, r) => x.id === r.id || semAcento(x.nome) === semAcento(r.nome);
+  const CAMPOS = ['nome', 'cat', 'qtd', 'unid', 'preco', 'naLista', 'comprado', 'linkPD', 'precoData'];
+  for (const r of d.produtos.map(limparProd)) {
+    const l = PRODUTOS.find(x => x.id === r.id) || PRODUTOS.find(x => semAcento(x.nome) === semAcento(r.nome));
+    if (l) {
+      const id = l.id < r.id ? l.id : r.id;   // os dois telemóveis ficam com o mesmo id
+      if (r.atualizado > (l.atualizado || 0)) {
+        const igual = CAMPOS.every(k => (l[k] ?? '') === (r[k] ?? ''));
+        CAMPOS.forEach(k => delete l[k]); Object.assign(l, r, { id }); if (!igual) mudados++;
+      } else l.id = id;
+      continue;
+    }
+    const ap = APAGADOS.find(x => mesmo(x, r));
+    if (ap && ap.atualizado >= r.atualizado) continue;          // foi apagado aqui depois
+    if (ap) APAGADOS = APAGADOS.filter(x => x !== ap);
+    PRODUTOS.push(r); novos++;
+  }
+  for (const t of (Array.isArray(d.apagados) ? d.apagados : [])) {
+    const a = { id: String(t.id || ''), nome: String(t.nome || ''), atualizado: Number(t.atualizado) || 0 };
+    const l = PRODUTOS.find(x => mesmo(x, a));
+    if (l && a.atualizado > (l.atualizado || 0)) { PRODUTOS = PRODUTOS.filter(x => x !== l); tirados++; }
+    if (!l || a.atualizado > (l.atualizado || 0)) { if (!APAGADOS.some(x => x.id === a.id)) APAGADOS.push(a); }
+  }
+  DESFAZER = antes; META.ultimaJuncao = Date.now(); salvar(); render();
+  const em = d.enviado ? ` (enviada a ${dataHora(d.enviado)})` : '';
+  const s = (n, a, b) => `<b>${n}</b> ${n === 1 ? a : b}`;
+  mostrarRes(novos || mudados || tirados
+    ? `Lista junta${em}: ${s(novos, 'produto novo', 'produtos novos')}, ${s(mudados, 'atualizado', 'atualizados')}${tirados ? ', ' + s(tirados, 'apagado', 'apagados') : ''}.`
+    : `As listas já estavam iguais${em}. Não mudou nada.`, !!(novos || mudados || tirados));
+}
+function mostrarRes(html, podeDesfazer) {
+  $('res').innerHTML = `<div>${html}</div>` + (podeDesfazer && DESFAZER ? `<button class="btn ghost" type="button" id="desfazer">Desfazer</button>` : '');
+  $('res').hidden = false;
+  if (location.hash !== '#partilhar') location.hash = '#partilhar';
+}
+$('res').addEventListener('click', e => {
+  if (e.target.id !== 'desfazer' || !DESFAZER) return;
+  const o = JSON.parse(DESFAZER); PRODUTOS = o.p; APAGADOS = o.a; DESFAZER = null; salvar(); render();
+  $('res').innerHTML = '<div>Desfeito: a lista voltou a ficar como estava.</div>';
+});
+$('juntar').addEventListener('click', () => $('ficheiro').click());
+$('ficheiro').addEventListener('change', async () => {
+  const f = $('ficheiro').files[0]; $('ficheiro').value = '';
+  if (!f) return;
+  try { juntar(await f.text()); } catch (e) { mostrarRes('Não foi possível ler o ficheiro.', false); }
+});
+// ficheiro recebido pelo menu Partilhar do Android (ver sw.js)
+async function verPartilhado() {
+  if (!new URLSearchParams(location.search).has('importar')) return;
+  history.replaceState(null, '', location.pathname + '#partilhar');
+  try {
+    const c = await caches.open('partilha'), url = new URL('ficheiro-partilhado', location.href).href;
+    const r = await c.match(url);
+    if (r) { juntar(await r.text()); await c.delete(url); }
+  } catch (e) { mostrarRes('Não foi possível ler o ficheiro partilhado. Usa "Escolher ficheiro recebido".', false); }
+}
+
+// ── Arranque ──────────────────────────────────────────────────────────────────
+PRODUTOS = carregar().map(p => Object.assign(p, { qtd: num(p.qtd), preco: num(p.preco), naLista: !!p.naLista, comprado: !!p.comprado, atualizado: Number(p.atualizado) || 0 }));
 render();
 verPartilhado();
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
+<footer style="text-align:center;font-size:10px;color:var(--muted);opacity:.7;padding:0 16px 110px">Made by Cassiano Tenda</footer>
 </body>
 </html>
