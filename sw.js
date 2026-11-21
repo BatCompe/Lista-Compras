@@ -1,5 +1,5 @@
 // Guarda a app no telemóvel para abrir sem internet e recebe ficheiros partilhados (Android).
-const CACHE = 'lista-compras-v2';
+const CACHE = 'lista-compras-v3';
 const FICHEIROS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

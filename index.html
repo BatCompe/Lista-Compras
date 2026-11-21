@@ -124,6 +124,22 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
 .pr form{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:8px}
 .pr input{height:42px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:0 12px;width:100%;min-width:0;font-variant-numeric:tabular-nums}
 .pr .btn{height:42px}
+.pd.ct{background:#1d4f91}
+.lojas{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lj{border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:grid;gap:6px;align-content:start}
+.lj.barato{border-color:#2e8b57;background:rgba(46,139,87,.08)}
+.lj .ljt{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+.lj .ljv{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.lj .ljv small{font-size:11px;font-weight:600;color:var(--muted)}
+.lj.barato .ljv{color:#2e8b57}
+.lj input{height:38px}
+.lj .pd{height:36px;font-size:13px;justify-content:center}
+.cmp{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 12px;display:grid;gap:8px}
+.cmp .tot{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmp .tot div{border-radius:10px;padding:8px 10px;background:var(--bg)}
+.cmp .tot b{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+.cmp .tot .win{outline:2px solid #2e8b57}
+.cmp small{color:var(--muted)}
 
 /* partilhar */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px;display:grid;gap:10px}
@@ -194,7 +210,8 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
   </section>
 
   <section id="v-precos" hidden>
-    <p class="intro">Toca em <b>Pingo Doce</b> para pesquisar o produto no site, escreve o preço e carrega em <b>Guardar</b>. Se guardares o link da página do produto (toca no nome do produto), o botão passa a abrir logo esse produto.</p>
+    <p class="intro">Compara o <b>Pingo Doce</b> e o <b>Continente</b>. Toca no botão da loja para ver o produto no site, escreve o preço e carrega em <b>Guardar</b>. Se guardares o link da página do produto em cada loja (toca no nome do produto), o preço passa a ser lido <b>automaticamente</b> todos os dias.</p>
+    <div id="cmp"></div>
     <div class="tgall" data-tgall="precos"><button type="button" data-acao="abrir-todas" data-v="precos">Abrir todas</button><button type="button" data-acao="fechar-todas" data-v="precos">Fechar todas</button></div><div id="precos"></div>
   </section>
 
@@ -242,8 +259,13 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
       <div class="field"><label for="e-qtd">Quantidade</label><input id="e-qtd" inputmode="decimal"></div>
       <div class="field"><label for="e-unid">Unidade</label><select id="e-unid"></select></div>
     </div>
-    <div class="field"><label for="e-preco">Preço por unidade (€)</label><input id="e-preco" inputmode="decimal" placeholder="ex.: 1,29"></div>
-    <div class="field"><label for="e-link">Link do produto no Pingo Doce (opcional)</label><input id="e-link" inputmode="url" placeholder="Cola aqui o endereço da página do produto"></div>
+    <div class="grid2">
+      <div class="field"><label for="e-preco">Preço no Pingo Doce (€)</label><input id="e-preco" inputmode="decimal" placeholder="ex.: 1,29"></div>
+      <div class="field"><label for="e-preco-ct">Preço no Continente (€)</label><input id="e-preco-ct" inputmode="decimal" placeholder="ex.: 1,25"></div>
+    </div>
+    <div class="field"><label for="e-link">Link do produto no Pingo Doce (opcional)</label><input id="e-link" inputmode="url" placeholder="https://www.pingodoce.pt/…"></div>
+    <div class="field"><label for="e-link-ct">Link do produto no Continente (opcional)</label><input id="e-link-ct" inputmode="url" placeholder="https://www.continente.pt/produto/…"></div>
+    <p class="intro" style="margin:0">Com o link guardado, o preço dessa loja é lido automaticamente todos os dias (depois de enviares o ficheiro de produtos para o GitHub, no separador Preços).</p>
     <div class="row"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" id="e-fechar">Fechar</button></div>
     <div class="row"><button class="btn ghost" type="button" id="e-tirar">Tirar da lista</button><button class="btn warn" type="button" id="e-apagar">Apagar dos habituais</button></div>
     <div class="confirm" id="e-conf" hidden>Apagar este produto de vez? Deixa de aparecer nos habituais (também no outro telemóvel, depois de juntarem as listas).
@@ -455,6 +477,44 @@ function cabCat(v, id, nome, cor, extra, forcarAberta) {
   return `<section class="aisle${ab ? '' : ' fechada'}"><h2 class="tg" data-acao="cat" data-v="${v}" data-cat="${id}" role="button" tabindex="0" aria-expanded="${ab}"><span class="sv" aria-hidden="true">▼</span><span class="ico" style="background:${cor}22;border-color:${cor}55" aria-hidden="true">${ICONES[id] || '🛒'}</span>${esc(nome)}${extra ? `<span class="n">${extra}</span>` : ''}</h2><div class="items">`;
 }
 
+// ── Preços nas duas lojas (manual ou automático) ──────────────────────────────────
+// Os preços automáticos vêm de precos.json, que o GitHub Actions atualiza todos os dias (scripts/precos.py).
+const URLS_PRECOS = ['https://raw.githubusercontent.com/BatCompe/lista-compras/main/precos.json', './precos.json'];
+const okPD = u => /^https:\/\/(www\.)?pingodoce\.pt\//.test(u || '');
+const okCT = u => /^https:\/\/(www\.)?continente\.pt\//.test(u || '');
+let AUTO = { atualizado: '', precos: {} };
+try { AUTO = JSON.parse(localStorage.getItem(CHAVE + '_auto') || 'null') || AUTO; } catch (e) {}
+async function carregarAuto() {
+  for (const u of URLS_PRECOS) {
+    try {
+      const r = await fetch(u + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) continue;
+      const d = await r.json();
+      if (d && d.precos) { AUTO = d; try { localStorage.setItem(CHAVE + '_auto', JSON.stringify(d)); } catch (e) {} render(); return; }
+    } catch (e) {}
+  }
+}
+// preço de um produto numa loja ('pd' ou 'ct'): o automático (se houver link e preço lido), senão o escrito à mão
+function precoLoja(p, loja) {
+  const link = loja === 'pd' ? p.linkPD : p.linkCT;
+  const a = link && AUTO.precos && AUTO.precos[link];
+  if (a && a.preco) return { v: a.preco, auto: true, data: a.data, antigo: !!a.antigo };
+  const v = loja === 'pd' ? p.preco : p.precoCT;
+  return v ? { v, auto: false, data: loja === 'pd' ? p.precoData : p.precoCTData } : null;
+}
+// o preço usado nos totais da lista: o mais barato das duas lojas
+function melhorPreco(p) { const a = precoLoja(p, 'pd'), b = precoLoja(p, 'ct'); return a && b ? Math.min(a.v, b.v) : (a || b)?.v || 0; }
+const dataCurta = d => { if (!d) return ''; const m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}` : String(d).slice(0, 5); };
+// ficheiro com os links dos produtos, para carregar no GitHub (é ele que diz que produtos se leem todos os dias)
+function exportarProdutos() {
+  const l = PRODUTOS.filter(p => okPD(p.linkPD) || okCT(p.linkCT)).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+    .map(p => ({ nome: p.nome, pingodoce: okPD(p.linkPD) ? p.linkPD : '', continente: okCT(p.linkCT) ? p.linkCT : '' }));
+  if (!l.length) { toast('Primeiro guarda os links dos produtos (toca no nome do produto)'); return; }
+  const f = new File([JSON.stringify({ produtos: l }, null, 1)], 'produtos.json', { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = 'produtos.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  toast(`produtos.json com ${l.length} produto(s) guardado nas Transferências`);
+}
 function render() {
   const v = vista();
   $('v-lista').hidden = v !== 'lista'; $('v-hab').hidden = v !== 'hab';
@@ -468,8 +528,8 @@ function render() {
 
   const naLista = PRODUTOS.filter(p => p.naLista);
   const falta = naLista.filter(p => !p.comprado), carrinho = naLista.filter(p => p.comprado);
-  const total = naLista.reduce((s, p) => s + (p.preco || 0) * (p.qtd || 0), 0);
-  const noCarro = carrinho.reduce((s, p) => s + (p.preco || 0) * (p.qtd || 0), 0);
+  const total = naLista.reduce((s, p) => s + melhorPreco(p) * (p.qtd || 0), 0);
+  const noCarro = carrinho.reduce((s, p) => s + melhorPreco(p) * (p.qtd || 0), 0);
   $('sum').innerHTML = `<span class="pill"><b>${falta.length}</b> por comprar</span><span class="pill"><b>${carrinho.length}</b> no carrinho</span>` +
     `<span class="pill total">Total estimado <b>${eur(total)}</b></span>` + (noCarro > 0 ? `<span class="pill">No carrinho <b>${eur(noCarro)}</b></span>` : '');
   $('wa').href = 'https://wa.me/?text=' + encodeURIComponent(textoLista());
@@ -485,7 +545,7 @@ function render() {
     return cabCat('lista', id, nome, cor, n ? n + ' por comprar' : 'tudo no carrinho') +
       it.map(p => `<div class="item${p.comprado ? ' done' : ''}">
         <button class="chk" type="button" data-acao="comprado" data-id="${esc(p.id)}" aria-label="${p.comprado ? 'Tirar do carrinho' : 'Pôr no carrinho'}: ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}><span>${ICON_OK}</span></button>
-        <button class="name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')}${p.preco ? ' · ' + eur(p.preco) + (p.qtd && p.qtd !== 1 ? ' = ' + eur(p.preco * p.qtd) : '') : ''}</small></button>
+        <button class="name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p)) + (p.qtd && p.qtd !== 1 ? ' = ' + eur(melhorPreco(p) * p.qtd) : '') : ''}</small></button>
         <div class="qty"><button type="button" data-acao="menos" data-id="${esc(p.id)}" aria-label="Menos ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>−</button><output>${fmtQtd(p.qtd || 0)}</output><button type="button" data-acao="mais" data-id="${esc(p.id)}" aria-label="Mais ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>+</button></div>
       </div>`).join('') + `</div></section>`;
   }).join('');
@@ -509,25 +569,45 @@ function render() {
     if (!it.length) return '';
     const nl = it.filter(p => p.naLista && !p.comprado).length;
     return cabCat('habs', id, nome, cor, (nl ? '✓ ' + nl + ' na lista · ' : '') + it.length, !!q) +
-      it.map(p => { const on = p.naLista && !p.comprado; return `<div class="hab"><div><b>${esc(p.nome)}</b><small>${esc(p.unid || 'un')}${p.preco ? ' · ' + eur(p.preco) : ''}</small></div>
+      it.map(p => { const on = p.naLista && !p.comprado; return `<div class="hab"><div><b>${esc(p.nome)}</b><small>${esc(p.unid || 'un')}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p)) : ''}</small></div>
         <button class="tog${on ? ' on' : ''}" type="button" data-acao="tog" data-id="${esc(p.id)}"${PODE_ESCREVER ? '' : ' disabled'}>${on ? '✓ Na lista' : '+ Lista'}</button>
         <button class="edit" type="button" data-acao="editar" data-id="${esc(p.id)}" aria-label="Editar ${esc(p.nome)}">${ICON_EDIT}</button></div>`; }).join('') + `</div></section>`;
   }).join('');
 
-  // Preços (Pingo Doce)
+  // Preços (Pingo Doce e Continente)
   // continuam aqui mesmo depois de irem para o carrinho; só saem com "Terminar compra"
   const pr = PRODUTOS.filter(p => p.naLista);
-  const semPreco = pr.filter(p => !p.preco).length;
+  // comparação: só conta os produtos com preço nas duas lojas, para ser justa
+  let tPD = 0, tCT = 0, n2 = 0, so1 = 0, sem = 0;
+  pr.forEach(p => { const a = precoLoja(p, 'pd'), c = precoLoja(p, 'ct'), q = p.qtd || 0; if (a && c) { tPD += a.v * q; tCT += c.v * q; n2++; } else if (a || c) so1++; else sem++; });
+  const nLinks = PRODUTOS.filter(p => okPD(p.linkPD) || okCT(p.linkCT)).length;
+  $('cmp').innerHTML = !pr.length ? '' : `<div class="cmp">
+      ${n2 ? `<div class="tot"><div class="${tPD < tCT ? 'win' : ''}"><small>Pingo Doce</small><b>${eur(tPD)}</b></div><div class="${tCT < tPD ? 'win' : ''}"><small>Continente</small><b>${eur(tCT)}</b></div></div>
+      <div>${tPD === tCT ? 'As duas lojas ficam ao mesmo preço' : `Mais barato no <b>${tPD < tCT ? 'Pingo Doce' : 'Continente'}</b>: poupas <b>${eur(Math.abs(tPD - tCT))}</b>`} <small>(${n2} produto(s) com preço nas duas lojas)</small></div>` : '<div>Para comparar as lojas, guarda os preços do mesmo produto no Pingo Doce e no Continente.</div>'}
+      ${so1 || sem ? `<small>${so1 ? so1 + ' produto(s) só com preço numa loja' : ''}${so1 && sem ? ' · ' : ''}${sem ? sem + ' sem preço' : ''}</small>` : ''}
+      <small>Preços automáticos: ${AUTO.atualizado ? 'atualizados em ' + new Date(AUTO.atualizado).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'ainda não há'} · ${nLinks} produto(s) com link</small>
+      <div class="row" style="margin:0"><button class="btn ghost" type="button" onclick="exportarProdutos()">📤 Ficheiro para o GitHub</button><button class="btn ghost" type="button" onclick="carregarAuto().then(()=>toast('Preços automáticos atualizados'))">🔄 Atualizar preços</button></div>
+    </div>`;
+  const caixa = (p, loja, outro) => {
+    const x = precoLoja(p, loja), pd = loja === 'pd', link = pd ? p.linkPD : p.linkCT;
+    const barato = x && outro && x.v < outro.v;
+    const manual = pd ? p.preco : p.precoCT;
+    return `<div class="lj${barato ? ' barato' : ''}">
+      <div class="ljt"><span>${pd ? 'Pingo Doce' : 'Continente'}</span><span>${x ? (x.auto ? (x.antigo ? '⚠️ auto ' : '⚡ auto ') + dataCurta(x.data) : '✍️ ' + esc(dataCurta(x.data))) : ''}</span></div>
+      <div class="ljv">${x ? eur(x.v) + (barato ? ' <small>mais barato</small>' : '') : '<small>sem preço</small>'}</div>
+      ${x && x.auto ? '' : `<input name="${loja}" inputmode="decimal" placeholder="Preço (€)" value="${manual ? String(manual).replace('.', ',') : ''}" aria-label="Preço de ${esc(p.nome)} no ${pd ? 'Pingo Doce' : 'Continente'}">`}
+      <a class="pd${pd ? '' : ' ct'}" href="${esc(pd ? urlPingoDoce(p) : urlContinente(p))}" target="_blank" rel="noopener">${link ? 'Ver produto' : 'Pesquisar'} ↗</a>
+    </div>`;
+  };
   if (!pr.length) $('precos').innerHTML = `<div class="empty"><strong>A lista está vazia</strong>Acrescenta produtos à <a href="#lista">Lista</a> para veres aqui os preços.</div>`;
-  else $('precos').innerHTML = (semPreco ? `<p class="intro">${semPreco} produto(s) ainda sem preço.</p>` : '') + CATS.map(([id, nome, cor]) => {
+  else $('precos').innerHTML = CATS.map(([id, nome, cor]) => {
     const it = pr.filter(p => (CAT[p.cat] ? p.cat : 'outros') === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
     if (!it.length) return '';
     return cabCat('precos', id, nome, cor, it.length) +
-      it.map(p => `<div class="pr">
-        <button class="nm name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')} · ${p.preco ? eur(p.preco) + ' / ' + esc(p.unid || 'un') + (p.precoData ? ' · visto em ' + esc(p.precoData) : '') : 'sem preço'}${p.linkPD ? ' · 🔗 link guardado' : ''}${p.comprado ? ' · ✓ no carrinho' : ''}</small></button>
-        <a class="pd" href="${esc(urlPingoDoce(p))}" target="_blank" rel="noopener">${p.linkPD ? 'Ver produto' : 'Pingo Doce'} ↗</a>
-        <form data-preco="${esc(p.id)}"><input inputmode="decimal" placeholder="Preço (€) por ${esc(p.unid || 'un')}" value="${p.preco ? String(p.preco).replace('.', ',') : ''}" aria-label="Preço de ${esc(p.nome)}"><button class="btn" type="submit">Guardar</button></form>
-      </div>`).join('') + `</div></section>`;
+      it.map(p => { const a = precoLoja(p, 'pd'), c = precoLoja(p, 'ct'); const auto2 = a && a.auto && c && c.auto; return `<div class="pr">
+        <button class="nm name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p) * (p.qtd || 0)) : ''}${p.comprado ? ' · ✓ no carrinho' : ''}${!p.linkPD || !p.linkCT ? ' · toca para guardar os links' : ''}</small></button>
+        <form data-preco="${esc(p.id)}" class="lojas">${caixa(p, 'pd', c)}${caixa(p, 'ct', a)}${auto2 ? '' : '<button class="btn" type="submit" style="grid-column:1/-1">Guardar preços</button>'}</form>
+      </div>`; }).join('') + `</div></section>`;
   }).join('');
 }
 
@@ -564,14 +644,21 @@ function urlPingoDoce(p) {
   if (p.linkPD && /^https:\/\/(www\.)?pingodoce\.pt\//.test(p.linkPD)) return p.linkPD;
   return 'https://www.pingodoce.pt/on/demandware.store/Sites-pingo-doce-Site/default/Search-Show?q=' + encodeURIComponent(p.nome);
 }
+// Abre o produto no site do Continente: a página do produto, se guardaste o link; senão, a pesquisa do site
+function urlContinente(p) {
+  if (okCT(p.linkCT)) return p.linkCT;
+  return 'https://www.continente.pt/pesquisa/?q=' + encodeURIComponent(p.nome);
+}
 document.addEventListener('submit', e => {
   const f = e.target.closest('form[data-preco]'); if (!f) return;
   e.preventDefault();
-  const v = Math.max(0, num(f.querySelector('input').value));
   const hoje = new Date().toLocaleDateString('pt-PT');
   const p = PRODUTOS.find(x => x.id === f.dataset.preco);
-  gravar(f.dataset.preco, { preco: v, precoData: v ? hoje : '' });
-  toast(v ? `Preço de ${p ? p.nome : ''} guardado` : 'Preço apagado');
+  const c = {}, ipd = f.querySelector('input[name=pd]'), ict = f.querySelector('input[name=ct]');
+  if (ipd) { const v = Math.max(0, num(ipd.value)); c.preco = v; c.precoData = v ? hoje : ''; }
+  if (ict) { const v = Math.max(0, num(ict.value)); c.precoCT = v; c.precoCTData = v ? hoje : ''; }
+  gravar(f.dataset.preco, c);
+  toast(`Preços de ${p ? p.nome : ''} guardados`);
 });
 window.addEventListener('hashchange', render);
 
@@ -587,6 +674,8 @@ function abrirEditar(p) {
   $('e-qtd').value = fmtQtd(p.qtd || 1); $('e-unid').value = UNIDS.includes(p.unid) ? p.unid : 'un';
   $('e-preco').value = p.preco ? String(p.preco).replace('.', ',') : '';
   $('e-link').value = p.linkPD || '';
+  $('e-preco-ct').value = p.precoCT ? String(p.precoCT).replace('.', ',') : '';
+  $('e-link-ct').value = p.linkCT || '';
   $('e-tirar').hidden = !p.naLista; $('e-conf').hidden = true;
   $('f-edit').querySelectorAll('input,select,#e-tirar,#e-apagar,[type=submit]').forEach(el => el.disabled = !PODE_ESCREVER);
   $('sheet').hidden = false;
@@ -599,7 +688,7 @@ $('f-edit').addEventListener('submit', e => {
   e.preventDefault(); if (!EDIT) return;
   const nome = $('e-nome').value.trim(); if (!nome) return;
   const q = num($('e-qtd').value);
-  gravar(EDIT, { nome, cat: $('e-cat').value, qtd: q > 0 ? q : 1, unid: $('e-unid').value, preco: Math.max(0, num($('e-preco').value)), linkPD: /^https:\/\/(www\.)?pingodoce\.pt\//.test($('e-link').value.trim()) ? $('e-link').value.trim() : '' }, true);
+  gravar(EDIT, { nome, cat: $('e-cat').value, qtd: q > 0 ? q : 1, unid: $('e-unid').value, preco: Math.max(0, num($('e-preco').value)), precoCT: Math.max(0, num($('e-preco-ct').value)), linkPD: okPD($('e-link').value.trim()) ? $('e-link').value.trim() : '', linkCT: okCT($('e-link-ct').value.trim()) ? $('e-link-ct').value.trim() : '' }, true);
   fecharEditar(); toast('Guardado');
 });
 $('e-tirar').addEventListener('click', () => { if (!EDIT) return; gravar(EDIT, { naLista: false, comprado: false }, true); fecharEditar(); toast('Saiu da lista'); });
@@ -642,6 +731,9 @@ function limparProd(p) {
   };
   if (p.precoData) r.precoData = String(p.precoData).slice(0, 20);
   if (p.linkPD && /^https:\/\/(www\.)?pingodoce\.pt\//.test(p.linkPD)) r.linkPD = String(p.linkPD);
+  if (num(p.precoCT) > 0) r.precoCT = num(p.precoCT);
+  if (p.precoCTData) r.precoCTData = String(p.precoCTData).slice(0, 20);
+  if (p.linkCT && /^https:\/\/(www\.)?continente\.pt\//.test(p.linkCT)) r.linkCT = String(p.linkCT);
   return migrar(r);
 }
 let DESFAZER = null;
@@ -708,9 +800,10 @@ async function verPartilhado() {
 }
 
 // ── Arranque ──────────────────────────────────────────────────────────────────
-PRODUTOS = carregar().map(p => Object.assign(p, { qtd: num(p.qtd), preco: num(p.preco), naLista: !!p.naLista, comprado: !!p.comprado, atualizado: Number(p.atualizado) || 0 }));
+PRODUTOS = carregar().map(p => Object.assign(p, { qtd: num(p.qtd), preco: num(p.preco), precoCT: num(p.precoCT), naLista: !!p.naLista, comprado: !!p.comprado, atualizado: Number(p.atualizado) || 0 }));
 render();
 verPartilhado();
+carregarAuto();
 try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
