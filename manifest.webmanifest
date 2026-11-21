@@ -8,16 +8,42 @@
   "background_color": "#f5f6f1",
   "theme_color": "#1f7a4d",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "share_target": {
     "action": "./partilha",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
-      "files": [ { "name": "ficheiro", "accept": ["text/plain", ".txt", "application/json", ".json"] } ]
+      "files": [
+        {
+          "name": "ficheiro",
+          "accept": [
+            "text/plain",
+            ".txt",
+            "application/json",
+            ".json"
+          ]
+        }
+      ],
+      "title": "titulo",
+      "text": "texto",
+      "url": "link"
     }
   }
 }
