@@ -1,5 +1,5 @@
 // Guarda a app no telemóvel para abrir sem internet e recebe ficheiros partilhados (Android).
-const CACHE = 'lista-compras-v3';
+const CACHE = 'lista-compras-v4';
 const FICHEIROS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -16,9 +16,18 @@ self.addEventListener('fetch', e => {
       try {
         const dados = await e.request.formData();
         const f = dados.get('ficheiro');
-        if (f) {
+        if (f && f.size) {
           const c = await caches.open('partilha');
           await c.put(new URL('ficheiro-partilhado', self.registration.scope).href, new Response(await f.text()));
+        } else {
+          // link de um produto partilhado a partir do site do Pingo Doce ou do Continente
+          const txt = [dados.get('link'), dados.get('texto'), dados.get('titulo')].filter(Boolean).join(' ');
+          const m = txt.match(/https?:\/\/\S+/);
+          if (m) {
+            const c = await caches.open('partilha');
+            await c.put(new URL('link-partilhado', self.registration.scope).href, new Response(JSON.stringify({ url: m[0], titulo: String(dados.get('titulo') || '') })));
+            return Response.redirect(new URL('./?link=1#precos', self.registration.scope).href, 303);
+          }
         }
       } catch (err) {}
       return Response.redirect(new URL('./?importar=1#partilhar', self.registration.scope).href, 303);

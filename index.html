@@ -210,7 +210,7 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
   </section>
 
   <section id="v-precos" hidden>
-    <p class="intro">Compara o <b>Pingo Doce</b> e o <b>Continente</b>. Toca no botão da loja para ver o produto no site, escreve o preço e carrega em <b>Guardar</b>. Se guardares o link da página do produto em cada loja (toca no nome do produto), o preço passa a ser lido <b>automaticamente</b> todos os dias.</p>
+    <p class="intro">Compara o <b>Pingo Doce</b> e o <b>Continente</b>. Toca em <b>Pesquisar</b>, abre o produto certo no site e toca em <b>Partilhar › Compras</b>: o link fica guardado nesse produto e o preço passa a ser lido <b>automaticamente</b> todos os dias. Também podes escrever o preço à mão e carregar em <b>Guardar</b>.</p>
     <div id="cmp"></div>
     <div class="tgall" data-tgall="precos"><button type="button" data-acao="abrir-todas" data-v="precos">Abrir todas</button><button type="button" data-acao="fechar-todas" data-v="precos">Fechar todas</button></div><div id="precos"></div>
   </section>
@@ -250,6 +250,15 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
   <div class="in" id="bar-in"></div>
 </div>
 
+<div class="sheet" id="lk" hidden>
+  <div class="panel">
+    <h3 id="lk-tit">Guardar link</h3>
+    <p class="intro" id="lk-info" style="margin:0 0 8px;word-break:break-all"></p>
+    <div class="field"><label for="lk-q">Em que produto?</label><input id="lk-q" placeholder="Procurar produto…" autocomplete="off"></div>
+    <div id="lk-lista" style="max-height:45vh;overflow:auto;display:grid;gap:6px;margin:8px 0"></div>
+    <div class="row"><button class="btn ghost" type="button" id="lk-fechar">Cancelar</button></div>
+  </div>
+</div>
 <div class="sheet" id="sheet" hidden>
   <form class="panel" id="f-edit" autocomplete="off">
     <h3 id="e-tit">Editar produto</h3>
@@ -265,7 +274,7 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
     </div>
     <div class="field"><label for="e-link">Link do produto no Pingo Doce (opcional)</label><input id="e-link" inputmode="url" placeholder="https://www.pingodoce.pt/…"></div>
     <div class="field"><label for="e-link-ct">Link do produto no Continente (opcional)</label><input id="e-link-ct" inputmode="url" placeholder="https://www.continente.pt/produto/…"></div>
-    <p class="intro" style="margin:0">Com o link guardado, o preço dessa loja é lido automaticamente todos os dias (depois de enviares o ficheiro de produtos para o GitHub, no separador Preços).</p>
+    <p class="intro" style="margin:0">Mais fácil no Android: abre o produto no site da loja, toca em <b>Partilhar</b> e escolhe <b>Compras</b> — o link fica guardado sem copiar nada. Com o link guardado, o preço é lido automaticamente todos os dias.</p>
     <div class="row"><button class="btn" type="submit">Guardar</button><button class="btn ghost" type="button" id="e-fechar">Fechar</button></div>
     <div class="row"><button class="btn ghost" type="button" id="e-tirar">Tirar da lista</button><button class="btn warn" type="button" id="e-apagar">Apagar dos habituais</button></div>
     <div class="confirm" id="e-conf" hidden>Apagar este produto de vez? Deixa de aparecer nos habituais (também no outro telemóvel, depois de juntarem as listas).
@@ -789,7 +798,47 @@ $('ficheiro').addEventListener('change', async () => {
   try { juntar(await f.text()); } catch (e) { mostrarRes('Não foi possível ler o ficheiro.', false); }
 });
 // ficheiro recebido pelo menu Partilhar do Android (ver sw.js)
+// ── Guardar o link de um produto partilhado do site (Partilhar › Compras, no Android) ──────────
+let LINK_P = null;
+function palavras(s) { return semAcento(s).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 2); }
+function abrirLink(url, titulo) {
+  const loja = okPD(url) ? 'pd' : okCT(url) ? 'ct' : '';
+  if (!loja) { toast('Esse link não é do Pingo Doce nem do Continente'); return; }
+  LINK_P = { url: url.split('#')[0], titulo, loja };
+  $('lk-tit').textContent = `Guardar link do ${loja === 'pd' ? 'Pingo Doce' : 'Continente'}`;
+  $('lk-info').textContent = titulo ? titulo.replace(/\s*[|–-]\s*(Continente|Pingo Doce).*$/i, '') : url;
+  $('lk-q').value = ''; desenharLink(); $('lk').hidden = false;
+}
+function desenharLink() {
+  if (!LINK_P) return;
+  const q = semAcento($('lk-q').value), pal = palavras(LINK_P.titulo + ' ' + decodeURIComponent(LINK_P.url.split('/').pop() || '').replace(/[-_]/g, ' '));
+  const pont = p => palavras(p.nome).filter(w => pal.some(x => x.startsWith(w) || w.startsWith(x))).length;
+  const l = PRODUTOS.filter(p => !q || semAcento(p.nome).includes(q))
+    .map(p => ({ p, s: pont(p) + (p.naLista ? 0.5 : 0) })).sort((a, b) => b.s - a.s || a.p.nome.localeCompare(b.p.nome, 'pt')).slice(0, 40);
+  $('lk-lista').innerHTML = l.map(({ p, s }) => {
+    const ja = LINK_P.loja === 'pd' ? p.linkPD : p.linkCT;
+    return `<button class="btn ghost" type="button" data-lk="${esc(p.id)}" style="justify-content:space-between;text-align:left;height:auto;min-height:44px;padding:8px 12px"><span>${s >= 1 ? '⭐ ' : ''}${esc(p.nome)}${p.naLista ? ' <small>(na lista)</small>' : ''}</span><small>${ja ? 'substituir link' : ''}</small></button>`;
+  }).join('') || '<p class="intro">Nenhum produto. Acrescenta-o primeiro à lista.</p>';
+}
+$('lk-q').addEventListener('input', desenharLink);
+$('lk-fechar').addEventListener('click', () => { $('lk').hidden = true; LINK_P = null; });
+$('lk-lista').addEventListener('click', e => {
+  const b = e.target.closest('[data-lk]'); if (!b || !LINK_P) return;
+  const p = PRODUTOS.find(x => x.id === b.dataset.lk); if (!p) return;
+  gravar(p.id, LINK_P.loja === 'pd' ? { linkPD: LINK_P.url } : { linkCT: LINK_P.url }, true);
+  toast(`Link do ${LINK_P.loja === 'pd' ? 'Pingo Doce' : 'Continente'} guardado em ${p.nome}`);
+  $('lk').hidden = true; LINK_P = null;
+});
 async function verPartilhado() {
+  if (new URLSearchParams(location.search).has('link')) {
+    history.replaceState(null, '', location.pathname + '#precos'); render();
+    try {
+      const c = await caches.open('partilha'), url = new URL('link-partilhado', location.href).href;
+      const r = await c.match(url);
+      if (r) { const d = await r.json(); await c.delete(url); abrirLink(d.url, d.titulo); }
+    } catch (e) {}
+    return;
+  }
   if (!new URLSearchParams(location.search).has('importar')) return;
   history.replaceState(null, '', location.pathname + '#partilhar');
   try {
