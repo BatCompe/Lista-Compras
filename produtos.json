@@ -1,9 +1,139 @@
 {
  "produtos": [
   {
-   "nome": "Leite meio-gordo Mimosa 1 L",
-   "pingodoce": "https://www.pingodoce.pt/home/produtos/leite-e-bebidas-vegetais/leite/leite-meio-gordo-e-gordo%E2%80%8B/leite-uht-meio-gordo-mimosa-41043.html",
-   "continente": "https://www.continente.pt/produto/leite-uht-meio-gordo-mimosa-mimosa-2210946.html"
+   "nome": "Alface",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/alfaces/alface-frisada-embalada-pingo-doce-262753.html?",
+   "continente": "https://www.continente.pt/produto/alface-frisada-continente-2647366.html"
+  },
+  {
+   "nome": "Alho",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/batatas-cebolas-e-alhos/alho-seco-embalado-os-nossos-frescos-930853.html?",
+   "continente": "https://www.continente.pt/produto/alho-seco-continente-5104239.html"
+  },
+  {
+   "nome": "Bacalhau",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/peixaria/bacalhau/bacalhau-congelado/postas-de-bacalhau-congeladas-pingo-doce-948617.html?",
+   "continente": "https://www.continente.pt/produto/bacalhau-desfiado-9-meses-de-cura-msc-congelado-riberalves-5734372.html"
+  },
+  {
+   "nome": "Bananas",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/fruta-da-epoca/banana-importada-nossa-fruta-e-legumes-43218.html?showReviews=true",
+   "continente": "https://www.continente.pt/produto/banana-continente-2597619.html"
+  },
+  {
+   "nome": "Batatas",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/batatas-cebolas-e-alhos/batata-para-cozer-e-assar-embalada-os-nossos-frescos-454634.html?",
+   "continente": "https://www.continente.pt/produto/batata-vermelha-continente-4475280.html"
+  },
+  {
+   "nome": "Bife de vaca",
+   "pingodoce": "",
+   "continente": "https://www.continente.pt/produto/bife-traseiro-de-bovino-continente-7303651.html"
+  },
+  {
+   "nome": "Brócolos",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/cenouras-couves-e-brocolos/brocolos-nossa-fruta-e-legumes-495691.html?",
+   "continente": "https://www.continente.pt/produto/couve-brocolo-continente-2076764.html"
+  },
+  {
+   "nome": "Camarão",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/peixaria/marisco/marisco-vivo-e-cozido/camarao-cozido-30%2F50-fresco-embalado-pingo-doce-906866.html?",
+   "continente": "https://www.continente.pt/produto/camarao-cozido-30-50-fresco-5497477.html"
+  },
+  {
+   "nome": "Carne picada",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/talho/vitela-vitelao-e-bovino/vitela-e-vitelao%E2%80%8B/preparado-de-carne-picada-de-vitelao-nosso-talho-622075.html?",
+   "continente": "https://www.continente.pt/produto/preparado-de-carne-picada-de-bovino-continente-7430620.html"
+  },
+  {
+   "nome": "Cebolas",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/batatas-cebolas-e-alhos/cebola-embalada-os-nossos-frescos-906515.html?",
+   "continente": "https://www.continente.pt/produto/cebola-nova-continente-5063153.html"
+  },
+  {
+   "nome": "Cenouras",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/cenouras-couves-e-brocolos/cenoura-embalada-os-nossos-frescos-906668.html?",
+   "continente": "https://www.continente.pt/produto/cenoura-continente-2885107.html"
+  },
+  {
+   "nome": "Courgette",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/outros-vegetais/curgete-nossa-fruta-e-legumes-42855.html?",
+   "continente": "https://www.continente.pt/produto/curgete-verde-continente-2076759.html"
+  },
+  {
+   "nome": "Coxas de frango",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/talho/aves/frango/coxas-de-frango-embaladas-pingo-doce-465643.html?",
+   "continente": "https://www.continente.pt/produto/coxas-de-frango-continente-7069743.html"
+  },
+  {
+   "nome": "Dourada",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/peixaria/peixe/dourada-e-robalo%E2%80%8B/dourada-fresca-ate-600g-nossa-peixaria-44047.html?",
+   "continente": "https://www.continente.pt/produto/dourada-media-fresca-4636366.html"
+  },
+  {
+   "nome": "Entrecosto",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/talho/porco/tiras-de-entrecosto-de-porco-nosso-talho-442055.html?",
+   "continente": "https://www.continente.pt/produto/tiras-de-entrecosto-de-porco-continente-2751718.html"
+  },
+  {
+   "nome": "Febras de porco",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/talho/porco/bifanas-de-porco-embaladas-pingo-doce-959145.html?",
+   "continente": "https://www.continente.pt/produto/bifanas-de-porco-continente-4285344.html"
+  },
+  {
+   "nome": "Hambúrgueres",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/congelados/refeicoes-e-salgados/hamburgueres-congelados/hamburgueres-de-vaca-sem-gluten-congelados-pingo-doce-937268.html?",
+   "continente": "https://www.continente.pt/produto/hamburger-misto-continente-8480587.html"
+  },
+  {
+   "nome": "Kiwis",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/fruta-da-epoca/kiwi-amarelo-nacional-os-nossos-frescos-1016948.html?",
+   "continente": "https://www.continente.pt/produto/kiwi-zespri-7174691.html"
+  },
+  {
+   "nome": "Laranjas",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/fruta-da-epoca/laranja-nossa-fruta-e-legumes-46442.html?",
+   "continente": "https://www.continente.pt/produto/laranja-citrinos-do-algarve---igp-igp-algarve-8017997.html"
+  },
+  {
+   "nome": "Maçãs",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/fruta-da-epoca/maca-gala-nacional-nossa-fruta-e-legumes-30717.html?",
+   "continente": "https://www.continente.pt/produto/maca-pink-lady-continente-7303767.html"
+  },
+  {
+   "nome": "Morangos",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/morangos-e-frutos-vermelhos/morango-embalado-nossa-fruta-e-legumes-487459.html?",
+   "continente": "https://www.continente.pt/produto/morango-continente-2471513.html"
+  },
+  {
+   "nome": "Peito de frango",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/talho/aves/frango/bife%2Fpeito-de-frango-a-granel-nosso-talho-544184.html?",
+   "continente": "https://www.continente.pt/produto/peito-de-frango-continente-7069674.html"
+  },
+  {
+   "nome": "Pepino",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/tomates-pepinos-e-pimentos/pepino-nossa-fruta-e-legumes-42854.html?",
+   "continente": "https://www.continente.pt/produto/pepino-continente-2076815.html"
+  },
+  {
+   "nome": "Pêras",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/fruta-da-epoca/pera-rocha-dop-oeste-nossa-fruta-e-legumes-369927.html?",
+   "continente": "https://www.continente.pt/produto/pera-rocha-dop-oeste-continente-7102076.html"
+  },
+  {
+   "nome": "Pimentos",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/tomates-pepinos-e-pimentos/pimento-verde-nossa-fruta-e-legumes-54900.html?",
+   "continente": "https://www.continente.pt/produto/pimento-vermelho-continente-2076826.html"
+  },
+  {
+   "nome": "Tomate",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/vegetais/tomates-pepinos-e-pimentos/tomate-redondo-70%2F95-nossa-fruta-e-legumes-32816.html?",
+   "continente": "https://www.continente.pt/produto/tomate-chucha-continente-2076838.html"
+  },
+  {
+   "nome": "Uvas",
+   "pingodoce": "https://www.pingodoce.pt/home/produtos/frutas-e-vegetais/frutas/uvas-kiwi-e-frutos-tropicais/uva-branca-sem-grainha-honey-920794.html?",
+   "continente": "https://www.continente.pt/produto/uva-branca-sem-grainha-continente-7840095.html"
   }
  ]
 }
