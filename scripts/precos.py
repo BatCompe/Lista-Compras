@@ -83,7 +83,81 @@ def extrair(html):
     m = re.search(r'"sales"\s*:\s*\{[^{}]*?"value"\s*:\s*"?(\d+(?:\.\d+)?)', html)
     if m and num(m.group(1)):
         return num(m.group(1)), nome
+    # 4) Continente: blocos de dados do produto (data-product-detail / dataLayer / "price":...)
+    for el in soup.select('[data-product-detail], [data-product], [data-gtm-info], [data-gtm]'):
+        for at in ('data-product-detail', 'data-product', 'data-gtm-info', 'data-gtm'):
+            v = el.get(at)
+            if v and '"price' in v:
+                m = re.search(r'"price"\s*:\s*"?(\d+(?:[.,]\d+)?)', v)
+                if m and num(m.group(1)):
+                    return num(m.group(1)), nome
+    for el in soup.select('.ct-price-value, .pwc-tile--price-primary, .prices-wrapper .value, .ct-pdp--price .value'):
+        p = num(el.get('content') or el.get_text(' ', strip=True))
+        if p:
+            return p, nome
+    m = re.search(r'"price"\s*:\s*"?(\d+[.,]\d{1,2})"?\s*,\s*"(?:currency|priceCurrency)"', html)
+    if m and num(m.group(1)):
+        return num(m.group(1)), nome
     return None, nome
+
+
+def preco_de_json(dados):
+    """Procura um preço de venda num JSON (resposta da loja)."""
+    pilha = [dados]
+    while pilha:
+        d = pilha.pop()
+        if isinstance(d, list):
+            pilha.extend(d); continue
+        if not isinstance(d, dict):
+            continue
+        s = d.get('sales')
+        if isinstance(s, dict) and num(s.get('value')):
+            return num(s.get('value'))
+        for k in ('salesPrice', 'price', 'unitPrice'):
+            v = d.get(k)
+            if isinstance(v, (int, float, str)) and num(v) and re.fullmatch(r'\s*\d+(?:[.,]\d+)?\s*€?\s*', str(v)):
+                return num(v)
+        pilha.extend(v for v in d.values() if isinstance(v, (dict, list)))
+    return None
+
+
+def continente_api(url):
+    """Continente: pede o preço diretamente à loja (plataforma Salesforce), pelo número do produto no fim do link."""
+    m = re.search(r'-(\d{5,})\.html', url)
+    if not m:
+        return None, None
+    pid = m.group(1)
+    base = 'https://www.continente.pt/on/demandware.store/Sites-continente-Site/default/'
+    for rota in (f'Product-Variation?pid={pid}&quantity=1', f'Product-ShowQuickView?pid={pid}'):
+        try:
+            r = requests.get(base + rota, headers={**CABECALHOS, 'Accept': 'application/json, text/html;q=0.9',
+                                                   'X-Requested-With': 'XMLHttpRequest', 'Referer': url}, timeout=30)
+            if r.status_code != 200:
+                continue
+            try:
+                j = r.json()
+            except Exception:
+                p, n = extrair(r.text)
+                if p:
+                    return p, n
+                continue
+            p = preco_de_json(j.get('product', j) if isinstance(j, dict) else j)
+            if p:
+                prod = j.get('product', {}) if isinstance(j, dict) else {}
+                return p, prod.get('productName') or prod.get('name')
+            html = j.get('renderedTemplate') if isinstance(j, dict) else None
+            if html:
+                p, n = extrair(html)
+                if p:
+                    return p, n
+        except Exception:
+            continue
+    return None, None
+
+
+def bloqueado(html):
+    t = html[:20000].lower()
+    return any(x in t for x in ('captcha', 'access denied', 'request blocked', 'are you a robot', 'pardon our interruption', 'cf-challenge'))
 
 
 def com_requests(url):
@@ -100,31 +174,74 @@ def com_playwright(url):
     if _navegador is None:
         pw = sync_playwright().start()
         _navegador = pw.chromium.launch()
-    pg = _navegador.new_page(user_agent=CABECALHOS['User-Agent'], locale='pt-PT')
+    pg = _navegador.new_page(user_agent=CABECALHOS['User-Agent'], locale='pt-PT', viewport={'width': 1366, 'height': 900})
+    respostas = []
+    m = re.search(r'-(\d{5,})\.html', url)
+    pid = m.group(1) if m else '§'
+    def guardar(resp):
+        try:
+            # só respostas deste produto (não as de produtos recomendados)
+            if pid in resp.url and 'json' in (resp.headers.get('content-type') or '') and len(respostas) < 40:
+                respostas.append(resp.json())
+        except Exception:
+            pass
+    pg.on('response', guardar)
     try:
         pg.goto(url, wait_until='domcontentloaded', timeout=45000)
-        pg.wait_for_timeout(3000)
+        for txt in ('Aceitar todos', 'Aceitar', 'Accept all', 'Concordo'):
+            try:
+                pg.get_by_role('button', name=txt).first.click(timeout=1500); break
+            except Exception:
+                pass
+        try:
+            pg.wait_for_selector('.ct-price-formatted, .prices .sales .value, [itemprop=price], .ct-price-value, .pwc-tile--price-primary', timeout=15000)
+        except Exception:
+            pass
+        try:
+            pg.wait_for_load_state('networkidle', timeout=10000)
+        except Exception:
+            pass
+        com_playwright.respostas = respostas
         return pg.content()
     finally:
         pg.close()
+com_playwright.respostas = []
 
 
 def ler(url):
     erro = ''
+    html = ''
     try:
-        p, n = extrair(com_requests(url))
+        html = com_requests(url)
+        p, n = extrair(html)
         if p:
             return p, n, ''
         erro = 'preço não encontrado na página'
     except Exception as e:
         erro = f'{type(e).__name__}: {e}'[:200]
+    if 'continente.pt' in url:
+        p, n = continente_api(url)
+        if p:
+            return p, n, ''
+        erro += ' | API Continente sem preço'
     try:
-        p, n = extrair(com_playwright(url))
+        html = com_playwright(url)
+        p, n = extrair(html)
+        if not p:
+            for j in com_playwright.respostas:
+                p = preco_de_json(j)
+                if p:
+                    break
         if p:
             return p, n, ''
         erro = 'preço não encontrado na página (também com o browser)'
     except Exception as e:
         erro = f'{erro} | browser: {type(e).__name__}: {e}'[:300]
+    if html and bloqueado(html):
+        erro += ' — o site BLOQUEOU o acesso (página de verificação/robô)'
+    elif html:
+        t = re.search(r'<title>(.*?)</title>', html, re.S | re.I)
+        erro += f' — página: "{(t.group(1).strip() if t else "?")[:60]}", tem "€": {"sim" if "€" in html else "não"}'
     return None, None, erro
 
 
