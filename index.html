@@ -265,7 +265,7 @@ h1{font:800 26px/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:ba
     <div class="field"><label for="e-nome">Produto</label><input id="e-nome" required></div>
     <div class="field"><label for="e-cat">Categoria</label><select id="e-cat"></select></div>
     <div class="grid2">
-      <div class="field"><label for="e-qtd">Quantidade</label><input id="e-qtd" inputmode="decimal"></div>
+      <div class="field"><label for="e-qtd" id="e-qtd-l">Quantidade</label><input id="e-qtd" inputmode="decimal"></div>
       <div class="field"><label for="e-unid">Unidade</label><select id="e-unid"></select></div>
     </div>
     <div class="grid2">
@@ -366,6 +366,11 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const eur = v => (v || 0).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' });
 const num = v => { const n = parseFloat(String(v ?? '').replace(',', '.')); return isFinite(n) ? n : 0; };
 const fmtQtd = q => (Math.round(q * 100) / 100).toLocaleString('pt-PT');
+// Produtos a peso (kg): a quantidade fica guardada em kg, mas mostra-se e escreve-se em gramas
+const ehPeso = p => (p.unid || '') === 'kg';
+const fmtPeso = kg => kg < 1 ? Math.round(kg * 1000) + ' g' : fmtQtd(kg) + ' kg';
+const fmtQU = p => ehPeso(p) ? fmtPeso(p.qtd || 0) : `${fmtQtd(p.qtd || 0)} ${p.unid || 'un'}`;   // "500 g", "1,5 kg", "2 un"
+const fmtQN = p => ehPeso(p) ? fmtPeso(p.qtd || 0) : fmtQtd(p.qtd || 0);                          // caixa do − / +
 
 function toast(t) { const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => el.hidden = true, 2200); }
 function nota(t) { $('nota').textContent = t || ''; $('nota').hidden = !t; }
@@ -454,7 +459,7 @@ function textoLista() {
     const it = falta.filter(p => (CAT[p.cat] ? p.cat : 'outros') === id).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'));
     if (!it.length) return;
     linhas.push('', `*${nome}*`);
-    it.forEach(p => linhas.push(`• ${p.nome} — ${fmtQtd(p.qtd || 1)} ${p.unid || 'un'}`));
+    it.forEach(p => linhas.push(`• ${p.nome} — ${fmtQU(Object.assign({}, p, { qtd: p.qtd || 1 }))}`));
   });
   const tot = falta.reduce((s, p) => s + (p.preco || 0) * (p.qtd || 0), 0);
   if (tot > 0) linhas.push('', `Total estimado: ${eur(tot)}`);
@@ -554,8 +559,8 @@ function render() {
     return cabCat('lista', id, nome, cor, n ? n + ' por comprar' : 'tudo no carrinho') +
       it.map(p => `<div class="item${p.comprado ? ' done' : ''}">
         <button class="chk" type="button" data-acao="comprado" data-id="${esc(p.id)}" aria-label="${p.comprado ? 'Tirar do carrinho' : 'Pôr no carrinho'}: ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}><span>${ICON_OK}</span></button>
-        <button class="name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p)) + (p.qtd && p.qtd !== 1 ? ' = ' + eur(melhorPreco(p) * p.qtd) : '') : ''}</small></button>
-        <div class="qty"><button type="button" data-acao="menos" data-id="${esc(p.id)}" aria-label="Menos ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>−</button><output>${fmtQtd(p.qtd || 0)}</output><button type="button" data-acao="mais" data-id="${esc(p.id)}" aria-label="Mais ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>+</button></div>
+        <button class="name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${esc(fmtQU(p))}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p)) + (ehPeso(p) ? '/kg' : '') + (p.qtd && p.qtd !== 1 ? ' = ' + eur(melhorPreco(p) * p.qtd) : '') : ''}</small></button>
+        <div class="qty"><button type="button" data-acao="menos" data-id="${esc(p.id)}" aria-label="Menos ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>−</button><output>${esc(fmtQN(p))}</output><button type="button" data-acao="mais" data-id="${esc(p.id)}" aria-label="Mais ${esc(p.nome)}"${PODE_ESCREVER ? '' : ' disabled'}>+</button></div>
       </div>`).join('') + `</div></section>`;
   }).join('');
 
@@ -614,7 +619,7 @@ function render() {
     if (!it.length) return '';
     return cabCat('precos', id, nome, cor, it.length) +
       it.map(p => { const a = precoLoja(p, 'pd'), c = precoLoja(p, 'ct'); const auto2 = a && a.auto && c && c.auto; return `<div class="pr">
-        <button class="nm name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${fmtQtd(p.qtd || 0)} ${esc(p.unid || 'un')}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p) * (p.qtd || 0)) : ''}${p.comprado ? ' · ✓ no carrinho' : ''}${!p.linkPD || !p.linkCT ? ' · toca para guardar os links' : ''}</small></button>
+        <button class="nm name" type="button" data-acao="editar" data-id="${esc(p.id)}"><b>${esc(p.nome)}</b><small>${esc(fmtQU(p))}${melhorPreco(p) ? ' · ' + eur(melhorPreco(p) * (p.qtd || 0)) : ''}${p.comprado ? ' · ✓ no carrinho' : ''}${!p.linkPD || !p.linkCT ? ' · toca para guardar os links' : ''}</small></button>
         <form data-preco="${esc(p.id)}" class="lojas">${caixa(p, 'pd', c)}${caixa(p, 'ct', a)}${auto2 ? '' : '<button class="btn" type="submit" style="grid-column:1/-1">Guardar preços</button>'}</form>
       </div>`; }).join('') + `</div></section>`;
   }).join('');
@@ -628,10 +633,10 @@ document.addEventListener('click', e => {
   if (a === 'editar' && p) return abrirEditar(p);
   if (!PODE_ESCREVER) return;
   if (a === 'comprado' && p) gravar(id, { comprado: !p.comprado }, true);
-  else if (a === 'mais' && p) gravar(id, { qtd: Math.round(((p.qtd || 0) + 1) * 100) / 100 });
+  else if (a === 'mais' && p) gravar(id, { qtd: Math.round(((p.qtd || 0) + (ehPeso(p) ? 0.1 : 1)) * 1000) / 1000 });
   else if (a === 'menos' && p) {
-    const q = Math.round(((p.qtd || 0) - 1) * 100) / 100;
-    if (q <= 0) { gravar(id, { naLista: false, comprado: false, qtd: 1 }, true); toast(`${p.nome} saiu da lista`); }
+    const q = Math.round(((p.qtd || 0) - (ehPeso(p) ? 0.1 : 1)) * 1000) / 1000;
+    if (q <= 0.0001) { gravar(id, { naLista: false, comprado: false, qtd: 1 }, true); toast(`${p.nome} saiu da lista`); }
     else gravar(id, { qtd: q });
   }
   else if (a === 'tog' && p) {
@@ -680,7 +685,8 @@ function abrirEditar(p) {
   EDIT = p.id;
   $('e-tit').textContent = p.nome;
   $('e-nome').value = p.nome; $('e-cat').value = CAT[p.cat] ? p.cat : 'outros';
-  $('e-qtd').value = fmtQtd(p.qtd || 1); $('e-unid').value = UNIDS.includes(p.unid) ? p.unid : 'un';
+  $('e-unid').value = UNIDS.includes(p.unid) ? p.unid : 'un';
+  qtdNoCampo(p.qtd || 1);
   $('e-preco').value = p.preco ? String(p.preco).replace('.', ',') : '';
   $('e-link').value = p.linkPD || '';
   $('e-preco-ct').value = p.precoCT ? String(p.precoCT).replace('.', ',') : '';
@@ -689,6 +695,24 @@ function abrirEditar(p) {
   $('f-edit').querySelectorAll('input,select,#e-tirar,#e-apagar,[type=submit]').forEach(el => el.disabled = !PODE_ESCREVER);
   $('sheet').hidden = false;
 }
+// Em kg o campo da quantidade é em gramas (ex.: 500 = meio quilo)
+let UNID_CAMPO = 'un';
+function qtdNoCampo(q) {
+  UNID_CAMPO = $('e-unid').value;
+  const kg = UNID_CAMPO === 'kg';
+  $('e-qtd-l').textContent = kg ? 'Quantidade (gramas)' : 'Quantidade';
+  $('e-qtd').placeholder = kg ? 'ex.: 500' : '';
+  $('e-qtd').value = kg ? String(Math.round(q * 1000)) : fmtQtd(q);
+}
+function lerQtdCampo() {
+  const t = $('e-qtd').value.toLowerCase();
+  const v = num(t);
+  if (!(v > 0)) return 0;
+  if (UNID_CAMPO !== 'kg') return v;
+  if (/kg/.test(t)) return v;            // escreveu "1,5 kg"
+  return Math.round(v) / 1000;           // gramas → kg
+}
+$('e-unid').addEventListener('change', () => { const q = lerQtdCampo() || 1; qtdNoCampo(UNID_CAMPO !== 'kg' && $('e-unid').value === 'kg' && q >= 10 ? q / 1000 : q); });
 function fecharEditar() { $('sheet').hidden = true; EDIT = null; }
 $('e-fechar').addEventListener('click', fecharEditar);
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) fecharEditar(); });
@@ -696,7 +720,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet'
 $('f-edit').addEventListener('submit', e => {
   e.preventDefault(); if (!EDIT) return;
   const nome = $('e-nome').value.trim(); if (!nome) return;
-  const q = num($('e-qtd').value);
+  const q = lerQtdCampo();
   gravar(EDIT, { nome, cat: $('e-cat').value, qtd: q > 0 ? q : 1, unid: $('e-unid').value, preco: Math.max(0, num($('e-preco').value)), precoCT: Math.max(0, num($('e-preco-ct').value)), linkPD: okPD($('e-link').value.trim()) ? $('e-link').value.trim() : '', linkCT: okCT($('e-link-ct').value.trim()) ? $('e-link-ct').value.trim() : '' }, true);
   fecharEditar(); toast('Guardado');
 });
